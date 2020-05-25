@@ -8,7 +8,7 @@ plugins {
 apply plugin: 'maven-publish'
 
 group 'com.tailoredapps.gradle'
-version '0.0.2'
+version '0.1.0'
 
 def ext_displayName = 'Gradle Localize Plugin'
 def ext_description = 'Gradle Plugin to generate Android string resource files from a localization spreadsheet.'
