@@ -20,7 +20,8 @@ class Localize {
         serviceAccountCredentialsFile: File,
         languageTitles: List<String>,
         baseLanguage: String,
-        localizationPath: File
+        localizationPath: File,
+        addComments: Boolean
     ) {
         val sheet = driveManager.getSheet(
             serviceAccountCredentialsFile = serviceAccountCredentialsFile,
@@ -37,7 +38,8 @@ class Localize {
                 parsedSheet = parsedSheet
             )
             val stringXmlContent = stringXmlGenerator.androidValuesToStringsXml(
-                values = transformedSheet
+                values = transformedSheet,
+                addComments = addComments
             )
 
             val file = getStringsXmlFileOrThrow(
@@ -53,7 +55,8 @@ class Localize {
         serviceAccountCredentialsFile: File,
         languageTitles: List<String>,
         baseLanguage: String,
-        localizationPath: File
+        localizationPath: File,
+        addComments: Boolean
     ) {
         val sheet = driveManager.getSheet(
             serviceAccountCredentialsFile = serviceAccountCredentialsFile,
@@ -72,7 +75,8 @@ class Localize {
                 parsedSheet = parsedSheet
             )
             val stringXmlContent = stringXmlGenerator.androidValuesToStringsXml(
-                values = transformedSheet
+                values = transformedSheet,
+                addComments = addComments
             )
 
             val file = getStringsXmlFileOrThrow(

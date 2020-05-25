@@ -12,10 +12,16 @@ class AndroidStringXmlGenerator {
     /**
      * Generates the contents for a `strings.xml` file with all given [values].
      *
-     * @param values The [ParsedSheetToAndroidTransformer.AndroidValue]s to put into the `strings.xml` file content.
+     * @param values The [AndroidValues][ParsedSheetToAndroidTransformer.AndroidValue] to put into the `strings.xml`
+     * file content.
+     * @param addComments Whether the comments of the [AndroidValue][ParsedSheetToAndroidTransformer.AndroidValue] (if
+     * present) should be added as XML comments to the file as well.
      * @return The content for a `strings.xml` file for the given [values].
      */
-    suspend fun androidValuesToStringsXml(values: List<ParsedSheetToAndroidTransformer.AndroidValue>): String {
+    suspend fun androidValuesToStringsXml(
+        values: List<ParsedSheetToAndroidTransformer.AndroidValue>,
+        addComments: Boolean
+    ): String {
         return suspendCancellableCoroutine<String> { continuation ->
             val string = StringBuilder().apply {
                 append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
@@ -26,17 +32,17 @@ class AndroidStringXmlGenerator {
                     }
                     when (androidValue) {
                         is ParsedSheetToAndroidTransformer.AndroidValue.Blank -> {
-                            appendCommentIfPresent(androidValue.comment)
+                            appendCommentIfPresent(androidValue.comment, addComments = addComments)
                             append("$INDENT<string name=\"${androidValue.identifier}\"></string>\n")
                         }
                         is ParsedSheetToAndroidTransformer.AndroidValue.Plain -> {
-                            appendCommentIfPresent(androidValue.comment)
+                            appendCommentIfPresent(androidValue.comment, addComments = addComments)
                             append("$INDENT<string name=\"${androidValue.identifier}\">")
                             append(androidValue.value.escapeSingleApostrophes().wrapInCData())
                             append("</string>\n")
                         }
                         is ParsedSheetToAndroidTransformer.AndroidValue.Array -> {
-                            appendCommentIfPresent(androidValue.comment)
+                            appendCommentIfPresent(androidValue.comment, addComments = addComments)
                             append("$INDENT<string-array name=\"${androidValue.identifier}\">\n")
                             androidValue.values.forEach { value ->
                                 append("$INDENT$INDENT<item>")
@@ -46,7 +52,7 @@ class AndroidStringXmlGenerator {
                             append("$INDENT</string-array>\n")
                         }
                         is ParsedSheetToAndroidTransformer.AndroidValue.Plural -> {
-                            appendCommentIfPresent(androidValue.comment)
+                            appendCommentIfPresent(androidValue.comment, addComments = addComments)
                             append("$INDENT<plurals name=\"${androidValue.identifier}\">\n")
                             androidValue.entries.forEach { (quantity, value) ->
                                 append("$INDENT$INDENT<item quantity=\"$quantity\">")
@@ -63,8 +69,8 @@ class AndroidStringXmlGenerator {
         }
     }
 
-    private fun StringBuilder.appendCommentIfPresent(comment: String?) {
-        if (comment != null) {
+    private fun StringBuilder.appendCommentIfPresent(comment: String?, addComments: Boolean) {
+        if (addComments && comment != null) {
             append("$INDENT<!-- $comment -->\n")
         }
     }

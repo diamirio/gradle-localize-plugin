@@ -68,11 +68,12 @@ localizeConfig {
 | Field                              | Type           | Description |
 | :--------------------------------- | :------------- | ----------- |
 | `serviceAccountCredentialsFile`    | `String`       | The local path to the credentials file for the service-account. More about this in [Google Drive Service Account Credentials](#google-drive-service-account-credentials) |
-| `sheetId`                          | `String`       | The id of the spreadsheet which contains the localization entries. You can get this ID from the link to your spreadsheet. e.g. For the spreadsheet-link `https://docs.google.com/spreadsheets/d/1fwRj1ZFPu2XlrDqkaqmIpJulqR5OVFEZnN35a9v37yc/edit`, the `sheetId` is `1fwRj1ZFPu2XlrDqkaqmIpJulqR5OVFEZnN35a9v37yc`.  |
+| `sheetId`                          | `String`       | The id of the spreadsheet which contains the localization entries. You can get this id from the link to your spreadsheet. e.g. For the spreadsheet-link `https://docs.google.com/spreadsheets/d/1fwRj1ZFPu2XlrDqkaqmIpJulqR5OVFEZnN35a9v37yc/edit`, the `sheetId` is `1fwRj1ZFPu2XlrDqkaqmIpJulqR5OVFEZnN35a9v37yc`.  |
 | `languageTitles`                   | `List<String>` | The list of column titles of the languages in the localization sheet (which is simultaneously also the list of local language folders which are created, so those should be e.g. `de` for german or `en` for english, and the column titles in the sheet should be named the same. |
 | `baseLanguage` (default: `en`)     | `String`       | The language (one of the values from `languageTitles`) which should be the default language, which is placed in the `values` folder (so if this is set to `en`, there will be no `values-en` folder created, but the english localizations will be placed in the `values` folder). |
-| `localizationPath` (default: `./src/main/res`) | `String` | The base directory path to put the localizations in. This defaults to `./src/main/res`, which is the default path within an app module to put the string ressources to. Change this if you want to have your localizations put somewhere else. |
+| `localizationPath` (default: `./src/main/res`) | `String` | The base directory path to put the localizations in. This defaults to `./src/main/res`, which is the default path within an app module to put the string resources to. Change this if you want to have your localizations put somewhere else. |
 | `addToCheckTask` (default: `true`) | `Boolean`      | Whether this plugin should add the `checkLocalization` task to the default `check` task. |
+| `addComments` (default: `true`)    | `Boolean`      | Whether the comments from the spreadsheet should be added to the strings.xml files (as comments) as well. |
 
 
 ## Tasks
