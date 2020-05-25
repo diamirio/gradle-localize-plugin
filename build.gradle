@@ -1,0 +1,122 @@
+plugins {
+    id 'com.gradle.plugin-publish' version '0.11.0'
+    id 'java-gradle-plugin'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.71'
+    id 'maven'
+}
+
+apply plugin: 'maven-publish'
+
+group 'com.tailoredapps.gradle'
+version '0.0.2'
+
+def ext_displayName = 'Gradle Localize Plugin'
+def ext_description = 'Gradle Plugin to generate Android string resource files from a localization spreadsheet.'
+def ext_website = 'https://github.com/tailoredmedia/gradle-localize-plugin'
+def ext_vcs = 'https://github.com/tailoredmedia/gradle-localize-plugin.git'
+def ext_labels = ['gradle', 'android', 'localization']
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7"
+
+    implementation 'com.google.api-client:google-api-client:1.23.0'
+    implementation 'com.google.apis:google-api-services-sheets:v4-rev612-1.25.0'
+
+    implementation 'com.google.code.gson:gson:2.8.6'
+
+    testImplementation "junit:junit:4.13"
+    testImplementation "org.amshove.kluent:kluent:1.61"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.7"
+
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+
+gradlePlugin {
+    plugins {
+        simplePlugin {
+            id = 'com.tailoredapps.gradle.localize'
+            implementationClass = 'com.tailoredapps.gradle.localize.GradleLocalizePlugin'
+        }
+    }
+}
+
+task sourceJar(type: Jar) {
+    description = "An archive of the source code for Maven Central"
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+
+// configuration for publishing to the Gradle plugins portal
+pluginBundle {
+    website = ext_website
+    vcsUrl = ext_vcs
+    description = ext_description
+    tags = ext_labels
+}
+
+
+Properties properties = new Properties()
+try {
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+} catch (IOException e) {
+    println("local.properties not found. This can be ignored, unless you want to publish. " + e.localizedMessage)
+}
+
+
+// Configure the maven-publish plugin
+publishing {
+    publications {
+        localizePlugin(MavenPublication) {
+            from components.java
+            artifact sourceJar
+            pom {
+                name = ext_displayName
+                description = ext_description
+                url = ext_website
+                packaging = 'jar'
+                licenses {
+                    license {
+                        name = 'The Apache Software License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'tailoredmedia'
+                        name = 'Tailored Apps'
+                        email = 'office@tailored-apps.com'
+                    }
+                }
+                scm {
+                    connection = ext_vcs
+                    developerConnection = ext_vcs
+                    url = ext_website
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            url 'https://artifactory.tailored-apps.com/artifactory/gradle-plugin'
+            credentials {
+                username properties.getProperty("artifactory.user")
+                password properties.getProperty("artifactory.apikey")
+            }
+        }
+    }
+}
