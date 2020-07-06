@@ -2,6 +2,7 @@ package com.tailoredapps.gradle.localize.android
 
 import com.tailoredapps.gradle.localize.localization.LocalizationSheetParser
 import org.amshove.kluent.shouldBeEqualTo
+import org.amshove.kluent.shouldThrow
 import org.junit.Before
 import org.junit.Test
 
@@ -675,6 +676,304 @@ internal class ParsedSheetToAndroidTransformerTest {
         )
 
         values shouldBeEqualTo expected
+    }
+
+    @Test
+    fun `plural with exclusively _one_ item`() {
+        val realExampleParsedSheet = LocalizationSheetParser.ParsedSheet(
+            worksheets = listOf(
+                LocalizationSheetParser.ParsedSheet.WorkSheet(
+                    title = "Test",
+                    entries = listOf(
+                        LocalizationSheetParser.ParsedSheet.LocalizationEntry(
+                            identifier = mapOf(
+                                LocalizationSheetParser.Platform.iOS to "example.plural",
+                                LocalizationSheetParser.Platform.Android to "example.plural",
+                                LocalizationSheetParser.Platform.Web to "example.plural"
+                            ),
+                            values = mapOf(
+                                "en" to "one|Teststring"
+                            ),
+                            comment = "Plural example"
+                        )
+                    )
+                )
+            )
+        )
+
+        val values = transformer.transformForLanguage(
+            language = "en",
+            parsedSheet = realExampleParsedSheet
+        )
+        val expected = listOf(
+            ParsedSheetToAndroidTransformer.AndroidValue.Plural(
+                identifier = "example.plural",
+                entries = listOf("one" to "Teststring"),
+                comment = "Plural example"
+            )
+        )
+
+        values shouldBeEqualTo expected
+    }
+
+    @Test
+    fun `plural with exclusively _other_ item`() {
+        val realExampleParsedSheet = LocalizationSheetParser.ParsedSheet(
+            worksheets = listOf(
+                LocalizationSheetParser.ParsedSheet.WorkSheet(
+                    title = "Test",
+                    entries = listOf(
+                        LocalizationSheetParser.ParsedSheet.LocalizationEntry(
+                            identifier = mapOf(
+                                LocalizationSheetParser.Platform.iOS to "example.plural",
+                                LocalizationSheetParser.Platform.Android to "example.plural",
+                                LocalizationSheetParser.Platform.Web to "example.plural"
+                            ),
+                            values = mapOf(
+                                "en" to "other|Teststring"
+                            ),
+                            comment = "Plural example"
+                        )
+                    )
+                )
+            )
+        )
+
+        val values = transformer.transformForLanguage(
+            language = "en",
+            parsedSheet = realExampleParsedSheet
+        )
+        val expected = listOf(
+            ParsedSheetToAndroidTransformer.AndroidValue.Plural(
+                identifier = "example.plural",
+                entries = listOf("other" to "Teststring"),
+                comment = "Plural example"
+            )
+        )
+
+        values shouldBeEqualTo expected
+    }
+
+    @Test
+    fun `plural with exclusively _zero_ item`() {
+        val realExampleParsedSheet = LocalizationSheetParser.ParsedSheet(
+            worksheets = listOf(
+                LocalizationSheetParser.ParsedSheet.WorkSheet(
+                    title = "Test",
+                    entries = listOf(
+                        LocalizationSheetParser.ParsedSheet.LocalizationEntry(
+                            identifier = mapOf(
+                                LocalizationSheetParser.Platform.iOS to "example.plural",
+                                LocalizationSheetParser.Platform.Android to "example.plural",
+                                LocalizationSheetParser.Platform.Web to "example.plural"
+                            ),
+                            values = mapOf(
+                                "en" to "zero|Teststring"
+                            ),
+                            comment = "Plural example"
+                        )
+                    )
+                )
+            )
+        )
+
+        val values = transformer.transformForLanguage(
+            language = "en",
+            parsedSheet = realExampleParsedSheet
+        )
+        val expected = listOf(
+            ParsedSheetToAndroidTransformer.AndroidValue.Plural(
+                identifier = "example.plural",
+                entries = listOf("zero" to "Teststring"),
+                comment = "Plural example"
+            )
+        )
+
+        values shouldBeEqualTo expected
+    }
+
+    @Test
+    fun `plural with exclusively _two_ item`() {
+        val realExampleParsedSheet = LocalizationSheetParser.ParsedSheet(
+            worksheets = listOf(
+                LocalizationSheetParser.ParsedSheet.WorkSheet(
+                    title = "Test",
+                    entries = listOf(
+                        LocalizationSheetParser.ParsedSheet.LocalizationEntry(
+                            identifier = mapOf(
+                                LocalizationSheetParser.Platform.iOS to "example.plural",
+                                LocalizationSheetParser.Platform.Android to "example.plural",
+                                LocalizationSheetParser.Platform.Web to "example.plural"
+                            ),
+                            values = mapOf(
+                                "en" to "two|Teststring"
+                            ),
+                            comment = "Plural example"
+                        )
+                    )
+                )
+            )
+        )
+
+        val values = transformer.transformForLanguage(
+            language = "en",
+            parsedSheet = realExampleParsedSheet
+        )
+        val expected = listOf(
+            ParsedSheetToAndroidTransformer.AndroidValue.Plural(
+                identifier = "example.plural",
+                entries = listOf("two" to "Teststring"),
+                comment = "Plural example"
+            )
+        )
+
+        values shouldBeEqualTo expected
+    }
+
+    @Test
+    fun `plural with exclusively _few_ item`() {
+        val realExampleParsedSheet = LocalizationSheetParser.ParsedSheet(
+            worksheets = listOf(
+                LocalizationSheetParser.ParsedSheet.WorkSheet(
+                    title = "Test",
+                    entries = listOf(
+                        LocalizationSheetParser.ParsedSheet.LocalizationEntry(
+                            identifier = mapOf(
+                                LocalizationSheetParser.Platform.iOS to "example.plural",
+                                LocalizationSheetParser.Platform.Android to "example.plural",
+                                LocalizationSheetParser.Platform.Web to "example.plural"
+                            ),
+                            values = mapOf(
+                                "en" to "few|Teststring"
+                            ),
+                            comment = "Plural example"
+                        )
+                    )
+                )
+            )
+        )
+
+        val values = transformer.transformForLanguage(
+            language = "en",
+            parsedSheet = realExampleParsedSheet
+        )
+        val expected = listOf(
+            ParsedSheetToAndroidTransformer.AndroidValue.Plural(
+                identifier = "example.plural",
+                entries = listOf("few" to "Teststring"),
+                comment = "Plural example"
+            )
+        )
+
+        values shouldBeEqualTo expected
+    }
+
+    @Test
+    fun `plural with exclusively _many_ item`() {
+        val realExampleParsedSheet = LocalizationSheetParser.ParsedSheet(
+            worksheets = listOf(
+                LocalizationSheetParser.ParsedSheet.WorkSheet(
+                    title = "Test",
+                    entries = listOf(
+                        LocalizationSheetParser.ParsedSheet.LocalizationEntry(
+                            identifier = mapOf(
+                                LocalizationSheetParser.Platform.iOS to "example.plural",
+                                LocalizationSheetParser.Platform.Android to "example.plural",
+                                LocalizationSheetParser.Platform.Web to "example.plural"
+                            ),
+                            values = mapOf(
+                                "en" to "many|Teststring"
+                            ),
+                            comment = "Plural example"
+                        )
+                    )
+                )
+            )
+        )
+
+        val values = transformer.transformForLanguage(
+            language = "en",
+            parsedSheet = realExampleParsedSheet
+        )
+        val expected = listOf(
+            ParsedSheetToAndroidTransformer.AndroidValue.Plural(
+                identifier = "example.plural",
+                entries = listOf("many" to "Teststring"),
+                comment = "Plural example"
+            )
+        )
+
+        values shouldBeEqualTo expected
+    }
+
+    @Test
+    fun `plural with zero and other items`() {
+        val realExampleParsedSheet = LocalizationSheetParser.ParsedSheet(
+            worksheets = listOf(
+                LocalizationSheetParser.ParsedSheet.WorkSheet(
+                    title = "Test",
+                    entries = listOf(
+                        LocalizationSheetParser.ParsedSheet.LocalizationEntry(
+                            identifier = mapOf(
+                                LocalizationSheetParser.Platform.iOS to "example.plural",
+                                LocalizationSheetParser.Platform.Android to "example.plural",
+                                LocalizationSheetParser.Platform.Web to "example.plural"
+                            ),
+                            values = mapOf(
+                                "en" to "zero|TeststringZero\nother|TeststringOther"
+                            ),
+                            comment = "Plural example"
+                        )
+                    )
+                )
+            )
+        )
+
+        val values = transformer.transformForLanguage(
+            language = "en",
+            parsedSheet = realExampleParsedSheet
+        )
+        val expected = listOf(
+            ParsedSheetToAndroidTransformer.AndroidValue.Plural(
+                identifier = "example.plural",
+                entries = listOf("zero" to "TeststringZero", "other" to "TeststringOther"),
+                comment = "Plural example"
+            )
+        )
+
+        values shouldBeEqualTo expected
+    }
+
+    @Test
+    fun `plural with invalid quantity keyword`() {
+        val realExampleParsedSheet = LocalizationSheetParser.ParsedSheet(
+            worksheets = listOf(
+                LocalizationSheetParser.ParsedSheet.WorkSheet(
+                    title = "Test",
+                    entries = listOf(
+                        LocalizationSheetParser.ParsedSheet.LocalizationEntry(
+                            identifier = mapOf(
+                                LocalizationSheetParser.Platform.iOS to "example.plural",
+                                LocalizationSheetParser.Platform.Android to "example.plural",
+                                LocalizationSheetParser.Platform.Web to "example.plural"
+                            ),
+                            values = mapOf(
+                                "en" to "something|TeststringZero\nother|TeststringOther"
+                            ),
+                            comment = "Plural example"
+                        )
+                    )
+                )
+            )
+        );
+
+        {
+            transformer.transformForLanguage(
+                language = "en",
+                parsedSheet = realExampleParsedSheet
+            )
+        }.shouldThrow(IllegalArgumentException::class)
+
     }
 
 }
