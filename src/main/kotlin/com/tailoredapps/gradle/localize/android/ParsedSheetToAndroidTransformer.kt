@@ -36,6 +36,11 @@ class ParsedSheetToAndroidTransformer {
 
     }
 
+    private companion object {
+        private val quantityKeywords = listOf("zero", "one", "two", "few", "many", "other")
+        private val quantityPrefixes = quantityKeywords.map { "$it|" }
+    }
+
     /**
      * Transforms the given [parsedSheet] for the given [language] into a list of [AndroidValue]s, which
      * then can be output to e.g. a `strings.xml` file.
@@ -59,6 +64,10 @@ class ParsedSheetToAndroidTransformer {
         }
     }
 
+    private fun String.isPluralDefinition(): Boolean {
+        return this.split("\n").any { line -> quantityPrefixes.any { prefix -> line.startsWith(prefix) } }
+    }
+
 
     internal fun parseToAndroidValue(
         entry: LocalizationSheetParser.ParsedSheet.LocalizationEntry,
@@ -71,7 +80,7 @@ class ParsedSheetToAndroidTransformer {
         return if (value != null) {
             when {
                 //check whether plural:
-                value.contains("one|") -> {
+                value.isPluralDefinition() -> {
                     AndroidValue.Plural(
                         identifier = identifier,
                         entries = value.split("\n")
@@ -79,7 +88,12 @@ class ParsedSheetToAndroidTransformer {
                                 pluralLine.split("|", limit = 2)
                                     .takeIf { it.size == 2 }
                             }
-                            .map { (quantity, value) -> quantity to value },
+                            .map { (quantity, value) ->
+                                if (quantity !in quantityKeywords) {
+                                    throw IllegalArgumentException("Invalid plural quantity keyword detected for $identifier: $quantity. Valid quantity keywords are: $quantityKeywords")
+                                }
+                                quantity to value
+                            },
                         comment = entry.comment
                     )
                 }
