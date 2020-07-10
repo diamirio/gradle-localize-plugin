@@ -76,6 +76,34 @@ localizeConfig {
 | `addComments` (default: `true`)    | `Boolean`      | Whether the comments from the spreadsheet should be added to the strings.xml files (as comments) as well. |
 
 
+### Product Flavor dependent configuration
+
+To configure the plugin flavor-dependent (e.g. when you have an application that should import different strings / into different folders (source-sets) depending on the flavor), the `localizeConfig` extension provides a `productFlavor` lambda.
+There, for each defined product flavor, config fields can be overwritten for that flavor.
+All fields not declared in a product-flavor config block fallback to the fields declared in the base config (or the default values if not declared there either).
+```groovy
+localizeConfig {
+    serviceAccountCredentialsFile = "./google_drive_credentials.json"  // The location of your service-account credentials file (more about that below)
+    sheetId = "1fwRj1ZFPu2XlrDqkaqmIpJulqR5OVFEZnN35a9v37yc"           // The ID of the spreadsheet which contains the localizations
+    languageTitles = ["de", "en"]                                      // The column header of the languages you want to import
+
+    productFlavors {
+        flavor1 {                                                      // 'flavor1' is a product flavor defined in the android configuration
+            sheetId = "flavor1SheetIdHere"                             // for the product-flavor 'flavor1', the given sheetId will be used
+            localizationPath = "./src/main/res"                        // for the product-flavor 'flavor2', the localizationPath "./src/main/res" will be used
+            // all other fields (e.g. languageTitles or serviceAccountCredentialsFile) will be taken from the base config above.
+        }
+
+        flavor2 {                                                      // 'flavor1' is a product flavor defined in the android configuration
+            sheetId = "flavor2SheetIdHere"                             // for the product-flavor 'flavor1', the given sheetId will be used
+            localizationPath = "./src/flavor2/res"                     // for the product-flavor 'flavor2', the localizationPath "./src/flavor2/res" will be used
+            // all other fields (e.g. languageTitles or serviceAccountCredentialsFile) will be taken from the base config above.
+        }
+    }
+}
+```
+
+
 ## Tasks
 
 #### `localize`
