@@ -1,12 +1,14 @@
 package com.tailoredapps.gradle.localize.extension
 
+import com.tailoredapps.gradle.localize.DEFAULT_LOCALIZATION_PATH
+
 /**
  * @param name The name of the flavor this config is for. This will automatically be set by the gradle plugin by the
  * name of the closure that has been invoked.
  *
  * @see BaseLocalizeExtension
  */
-open class FlavorLocalizeExtension(
+open class ProductLocalizeExtension(
     var name: String
 ) {
     /**
@@ -20,7 +22,7 @@ open class FlavorLocalizeExtension(
      * You can get this id from the link to your spreadsheet.
      * @see [BaseLocalizeExtension.sheetId]
      */
-    var sheetId: String? = null
+    var sheetId: String = ""
 
     /**
      * The list of column titles of the languages in the localization sheet (which is simultaneously
@@ -28,7 +30,7 @@ open class FlavorLocalizeExtension(
      * english, and the column titles in the sheet should be named the same.
      * @see [BaseLocalizeExtension.languageTitles]
      */
-    var languageTitles: MutableList<String>? = null
+    var languageTitles: MutableList<String> = mutableListOf()
 
     /**
      * The language (one of the values from [languageTitles]) which should be the default language, which is placed
@@ -46,7 +48,7 @@ open class FlavorLocalizeExtension(
      * localizations to e.g. `./src/<myFlavorName>/res`.
      * @see [BaseLocalizeExtension.localizationPath]
      */
-    var localizationPath: String? = null
+    var localizationPath: String = DEFAULT_LOCALIZATION_PATH
 
     /**
      * Whether the comments from the spreadsheet should be added to the strings.xml files (as comments) as well.

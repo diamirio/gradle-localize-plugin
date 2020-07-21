@@ -1,14 +1,9 @@
 package com.tailoredapps.gradle.localize.extension
 
 import com.tailoredapps.gradle.localize.LocalizationConfig
-import io.mockk.MockKAnnotations
-import io.mockk.every
+import io.mockk.*
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
-import io.mockk.verify
-import org.amshove.kluent.shouldBe
-import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldNotBeEmpty
+import org.amshove.kluent.*
 import org.junit.Before
 import org.junit.Test
 
@@ -28,84 +23,84 @@ class ConfigProviderTest {
     }
 
     @Test
-    fun `getFlavorAwareConfigs for empty flavor list`() {
-        val config: LocalizationConfig = mockk()
-        every { extensionMerger.merge(any(), any()) } returns config
+    fun `getProductAwareConfigs for empty list of product configs`() {
+        val baseConfig: BaseLocalizeExtension = mockk(relaxed = true) {
+            productConfigContainer = mockk {
+                every { asMap } returns sortedMapOf<String, ProductLocalizeExtension>()
+            }
+        }
 
-        val baseConfig: BaseLocalizeExtension = mockk()
+        val result = configProvider.getProductAwareConfigs(baseConfig = baseConfig)
 
-        val result = configProvider.getFlavorAwareConfigs(
-            flavorNames = emptyList(),
-            baseConfig = baseConfig
-        )
-
-        verify { extensionMerger.merge(baseConfig, null) }
-
-        result.shouldNotBeEmpty()
-        result.size shouldBeEqualTo 1
-        result.first() shouldBe config
+        result.shouldNotBeNull()
+        result.shouldBeEmpty()
+        verify(exactly = 0) { extensionMerger.merge(any(), any(), any()) }
     }
 
     @Test
-    fun `getFlavorAwareConfigs for one flavor`() {
-        val config: LocalizationConfig = mockk()
-        every { extensionMerger.merge(any(), any()) } returns config
-
-        val baseConfig: BaseLocalizeExtension = mockk()
-
-        val result = configProvider.getFlavorAwareConfigs(
-            flavorNames = listOf("mock"),
-            baseConfig = baseConfig
+    fun `getProductAwareConfigs for list of one product config`() {
+        val firstProductLocalizeExtension: ProductLocalizeExtension = mockk(relaxed = true)
+        val baseConfig: BaseLocalizeExtension = mockk(relaxed = true) {
+            productConfigContainer = mockk()
+        }
+        every { baseConfig.productConfigContainer.asMap } returns sortedMapOf<String, ProductLocalizeExtension>(
+            "firstProduct" to firstProductLocalizeExtension
         )
 
-        verify { extensionMerger.merge(baseConfig, "mock") }
+        val firstMergedConfig: LocalizationConfig = mockk()
+        every { extensionMerger.merge(any(), any(), any()) } returns firstMergedConfig
 
+        val result = configProvider.getProductAwareConfigs(baseConfig = baseConfig)
+
+        result.shouldNotBeNull()
         result.shouldNotBeEmpty()
-        result.size shouldBeEqualTo 1
-        result.first() shouldBe config
+        result.size `should be equal to` 1
+        result.first() shouldBe firstMergedConfig
+        verify(exactly = 1) {
+            extensionMerger.merge(
+                baseConfig,
+                "firstProduct",
+                firstProductLocalizeExtension
+            )
+        }
     }
 
     @Test
-    fun `getFlavorAwareConfigs for two flavors`() {
-        val config1: LocalizationConfig = mockk()
-        every { extensionMerger.merge(any(), eq("flavor1")) } returns config1
-        val config2: LocalizationConfig = mockk()
-        every { extensionMerger.merge(any(), eq("flavor2")) } returns config2
-
-        val baseConfig: BaseLocalizeExtension = mockk()
-
-        val result = configProvider.getFlavorAwareConfigs(
-            flavorNames = listOf("flavor1", "flavor2"),
-            baseConfig = baseConfig
+    fun `getProductAwareConfigs for list of two product config`() {
+        val firstProductLocalizeExtension: ProductLocalizeExtension = mockk(relaxed = true)
+        val secondProductLocalizeExtension: ProductLocalizeExtension = mockk(relaxed = true)
+        val baseConfig: BaseLocalizeExtension = mockk(relaxed = true) {
+            productConfigContainer = mockk()
+        }
+        every { baseConfig.productConfigContainer.asMap } returns sortedMapOf<String, ProductLocalizeExtension>(
+            "firstProduct" to firstProductLocalizeExtension,
+            "secondProduct" to secondProductLocalizeExtension
         )
 
-        verify { extensionMerger.merge(baseConfig, "flavor1") }
-        verify { extensionMerger.merge(baseConfig, "flavor2") }
+        val firstMergedConfig: LocalizationConfig = mockk()
+        val secondMergedConfig: LocalizationConfig = mockk()
+        every { extensionMerger.merge(any(), "firstProduct", any()) } returns firstMergedConfig
+        every { extensionMerger.merge(any(), "secondProduct", any()) } returns secondMergedConfig
 
+        val result = configProvider.getProductAwareConfigs(baseConfig = baseConfig)
+
+        result.shouldNotBeNull()
         result.shouldNotBeEmpty()
-        result.size shouldBeEqualTo 2
-        result[0] shouldBe config1
-        result[1] shouldBe config2
-    }
-
-    @Test
-    fun `getFlavorAwareConfigs for two flavors with same configs`() {
-        val config: LocalizationConfig = mockk()
-        every { extensionMerger.merge(any(), any()) } returns config
-
-        val baseConfig: BaseLocalizeExtension = mockk()
-
-        val result = configProvider.getFlavorAwareConfigs(
-            flavorNames = listOf("flavor1", "flavor2"),
-            baseConfig = baseConfig
-        )
-
-        verify { extensionMerger.merge(baseConfig, "flavor1") }
-        verify { extensionMerger.merge(baseConfig, "flavor2") }
-
-        result.shouldNotBeEmpty()
-        result.size shouldBeEqualTo 1
-        result[0] shouldBe config
+        result.size `should be equal to` 2
+        result[0] shouldBe firstMergedConfig
+        result[1] shouldBe secondMergedConfig
+        verifyOrder {
+            extensionMerger.merge(
+                baseConfig,
+                "firstProduct",
+                firstProductLocalizeExtension
+            )
+            extensionMerger.merge(
+                baseConfig,
+                "secondProduct",
+                secondProductLocalizeExtension
+            )
+        }
     }
 
 }

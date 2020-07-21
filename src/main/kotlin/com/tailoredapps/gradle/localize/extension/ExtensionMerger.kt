@@ -9,37 +9,26 @@ class ExtensionMerger(
 
     fun merge(
         baseConfig: BaseLocalizeExtension,
-        flavor: String?
+        productConfigName: String,
+        productConfig: ProductLocalizeExtension
     ): LocalizationConfig {
-        //check if we even have a flavor dependent config
-        return if (baseConfig.flavorConfigContainer.isEmpty() || flavor == null) {
-            LocalizationConfig(
-                serviceAccountCredentialsFile = pathToFileManager.pathToFile(baseConfig.serviceAccountCredentialsFile),
-                sheetId = baseConfig.sheetId,
-                languageTitles = baseConfig.languageTitles,
-                baseLanguage = baseConfig.baseLanguage,
-                localizationPath = pathToFileManager.pathToFile(baseConfig.localizationPath),
-                addToCheckTask = baseConfig.addToCheckTask,
-                addComments = baseConfig.addComments
-            )
-        } else {
-            val flavorConfig = baseConfig.flavorConfigContainer.asMap[flavor]
+        val serviceAccountCredentialsPath = productConfig.serviceAccountCredentialsFile
+            ?: baseConfig.serviceAccountCredentialsFile
 
-            val serviceAccountCredentialsPath = flavorConfig?.serviceAccountCredentialsFile
-                ?: baseConfig.serviceAccountCredentialsFile
+        val localizationPath = productConfig.localizationPath
 
-            val localizationPath = flavorConfig?.localizationPath ?: baseConfig.localizationPath
-
-            LocalizationConfig(
-                serviceAccountCredentialsFile = pathToFileManager.pathToFile(serviceAccountCredentialsPath),
-                sheetId = flavorConfig?.sheetId ?: baseConfig.sheetId,
-                languageTitles = flavorConfig?.languageTitles ?: baseConfig.languageTitles,
-                baseLanguage = flavorConfig?.baseLanguage ?: baseConfig.baseLanguage,
-                localizationPath = pathToFileManager.pathToFile(localizationPath),
-                addToCheckTask = baseConfig.addToCheckTask,
-                addComments = flavorConfig?.addComments ?: baseConfig.addComments
-            )
-        }
+        return LocalizationConfig(
+            productName = productConfigName,
+            serviceAccountCredentialsFile = pathToFileManager.pathToFile(
+                serviceAccountCredentialsPath
+            ),
+            sheetId = productConfig.sheetId,
+            languageTitles = productConfig.languageTitles,
+            baseLanguage = productConfig.baseLanguage ?: baseConfig.baseLanguage,
+            localizationPath = pathToFileManager.pathToFile(localizationPath),
+            addToCheckTask = baseConfig.addToCheckTask,
+            addComments = productConfig.addComments ?: baseConfig.addComments
+        )
     }
 
 

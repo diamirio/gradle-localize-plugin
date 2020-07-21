@@ -31,136 +31,26 @@ class ExtensionMergerTest {
 
 
     @Test
-    fun `empty base config only without flavor`() {
-        val config = extensionMerger.merge(
-            baseConfig = prepareBaseLocalizeExtension(),
-            flavor = null
-        )
-
-        config.shouldNotBeNull()
-        config shouldBeEqualTo LocalizationConfig(
-            serviceAccountCredentialsFile = File("/tmp"),
-            sheetId = "",
-            languageTitles = emptyList(),
-            baseLanguage = "en",
-            localizationPath = File("/tmp", "./src/main/res"),
-            addToCheckTask = true,
-            addComments = true
-        )
-    }
-
-    @Test
-    fun `base config only without flavor`() {
-        val config = extensionMerger.merge(
-            baseConfig = prepareBaseLocalizeExtension().apply {
-                serviceAccountCredentialsFile = "./some-service-accounts-file.json"
-                sheetId = "ASDF1234!"
-                languageTitles = mutableListOf("de", "en", "ru")
-                baseLanguage = "ru"
-                localizationPath = "./src/main/some-custom-res"
-                addToCheckTask = true
-                addComments = true
-            },
-            flavor = null
-        )
-
-        config.shouldNotBeNull()
-        config shouldBeEqualTo LocalizationConfig(
-            serviceAccountCredentialsFile = File("/tmp/./some-service-accounts-file.json"),
-            sheetId = "ASDF1234!",
-            languageTitles = listOf("de", "en", "ru"),
-            baseLanguage = "ru",
-            localizationPath = File("/tmp", "./src/main/some-custom-res"),
-            addToCheckTask = true,
-            addComments = true
-        )
-    }
-
-    @Test
     fun `empty base config with one flavor config`() {
-        val baseConfig = prepareBaseLocalizeExtension(
-            listOf(
-                FlavorLocalizeExtension("mock").apply {
-                    serviceAccountCredentialsFile = "./some-service-accounts-file.json"
-                    sheetId = "ASDF1234!"
-                    languageTitles = mutableListOf("de", "en", "ru")
-                    baseLanguage = "ru"
-                    localizationPath = "./src/main/some-custom-res"
-                    addComments = true
-                }
-            )
-        )
-        val configWithoutFlavor = extensionMerger.merge(
-            baseConfig = baseConfig,
-            flavor = null
-        )
-
-        val configForMock = extensionMerger.merge(
-            baseConfig = baseConfig,
-            flavor = "mock"
-        )
-
-        configWithoutFlavor.shouldNotBeNull()
-        configWithoutFlavor shouldBeEqualTo LocalizationConfig(
-            serviceAccountCredentialsFile = File("/tmp"),
-            sheetId = "",
-            languageTitles = emptyList(),
-            baseLanguage = "en",
-            localizationPath = File("/tmp/./src/main/res"),
-            addToCheckTask = true,
-            addComments = true
-        )
-
-        configForMock.shouldNotBeNull()
-        configForMock shouldBeEqualTo LocalizationConfig(
-            serviceAccountCredentialsFile = File("/tmp/./some-service-accounts-file.json"),
-            sheetId = "ASDF1234!",
-            languageTitles = listOf("de", "en", "ru"),
-            baseLanguage = "ru",
-            localizationPath = File("/tmp", "./src/main/some-custom-res"),
-            addToCheckTask = true,
-            addComments = true
-        )
-    }
-
-    @Test
-    fun `base config only with flavor overwriting all fields`() {
-        val baseConfig = prepareBaseLocalizeExtension(
-            listOf(
-                FlavorLocalizeExtension("mock").apply {
-                    serviceAccountCredentialsFile = "./some-service-accounts-file-for-mock.json"
-                    sheetId = "SHEET_FOR_MOCK"
-                    languageTitles = mutableListOf("de", "en", "ru", "it")
-                    baseLanguage = "it"
-                    localizationPath = "./src/main/some-custom-res-for-mock"
-                    addComments = false
-                }
-            )
-        ).apply {
+        val productConfig = ProductLocalizeExtension("mock").apply {
             serviceAccountCredentialsFile = "./some-service-accounts-file.json"
             sheetId = "ASDF1234!"
             languageTitles = mutableListOf("de", "en", "ru")
             baseLanguage = "ru"
             localizationPath = "./src/main/some-custom-res"
-            addToCheckTask = true
             addComments = true
         }
-        val configWithoutFlavor = extensionMerger.merge(
-            baseConfig = baseConfig,
-            flavor = null
-        )
+        val baseConfig = prepareBaseLocalizeExtension(listOf(productConfig))
+
         val configForMock = extensionMerger.merge(
             baseConfig = baseConfig,
-            flavor = "mock"
+            productConfigName = "mock",
+            productConfig = productConfig
         )
 
-        val configForNonExistingFlavor = extensionMerger.merge(
-            baseConfig = baseConfig,
-            flavor = "some-nonexistent-flavor"
-        )
-
-        configWithoutFlavor.shouldNotBeNull()
-        configWithoutFlavor shouldBeEqualTo LocalizationConfig(
+        configForMock.shouldNotBeNull()
+        configForMock shouldBeEqualTo LocalizationConfig(
+            productName = "mock",
             serviceAccountCredentialsFile = File("/tmp/./some-service-accounts-file.json"),
             sheetId = "ASDF1234!",
             languageTitles = listOf("de", "en", "ru"),
@@ -169,9 +59,35 @@ class ExtensionMergerTest {
             addToCheckTask = true,
             addComments = true
         )
+    }
+
+    @Test
+    fun `base config only with flavor overwriting all possible fields`() {
+        val mockProductFlavor = ProductLocalizeExtension("someProductName").apply {
+            serviceAccountCredentialsFile = "./some-service-accounts-file-for-mock.json"
+            sheetId = "SHEET_FOR_MOCK"
+            languageTitles = mutableListOf("de", "en", "ru", "it")
+            baseLanguage = "it"
+            localizationPath = "./src/main/some-custom-res-for-mock"
+            addComments = false
+        }
+        val baseConfig = prepareBaseLocalizeExtension(
+            listOf(mockProductFlavor)
+        ).apply {
+            serviceAccountCredentialsFile = "./some-service-accounts-file.json"
+            baseLanguage = "ru"
+            addToCheckTask = true
+            addComments = true
+        }
+        val configForMock = extensionMerger.merge(
+            baseConfig = baseConfig,
+            productConfigName = "someProductName",
+            productConfig = mockProductFlavor
+        )
 
         configForMock.shouldNotBeNull()
         configForMock shouldBeEqualTo LocalizationConfig(
+            productName = "someProductName",
             serviceAccountCredentialsFile = File("/tmp/./some-service-accounts-file-for-mock.json"),
             sheetId = "SHEET_FOR_MOCK",
             languageTitles = listOf("de", "en", "ru", "it"),
@@ -180,26 +96,15 @@ class ExtensionMergerTest {
             addToCheckTask = true,
             addComments = false
         )
-
-        configForNonExistingFlavor.shouldNotBeNull()
-        configForNonExistingFlavor shouldBeEqualTo LocalizationConfig(
-            serviceAccountCredentialsFile = File("/tmp/./some-service-accounts-file.json"),
-            sheetId = "ASDF1234!",
-            languageTitles = listOf("de", "en", "ru"),
-            baseLanguage = "ru",
-            localizationPath = File("/tmp", "./src/main/some-custom-res"),
-            addToCheckTask = true,
-            addComments = true
-        )
-
     }
 
 
-    private fun prepareBaseLocalizeExtension(flavorExtensions: List<FlavorLocalizeExtension> = emptyList()) =
+    private fun prepareBaseLocalizeExtension(productExtensions: List<ProductLocalizeExtension> = emptyList()) =
         BaseLocalizeExtension().apply {
-            flavorConfigContainer = mockk()
-            every { flavorConfigContainer.isEmpty() } returns flavorExtensions.isEmpty()
-            every { flavorConfigContainer.asMap } returns flavorExtensions.associateBy { it.name }.toSortedMap()
+            productConfigContainer = mockk()
+            every { productConfigContainer.isEmpty() } returns productExtensions.isEmpty()
+            every { productConfigContainer.asMap } returns productExtensions.associateBy { it.name }
+                .toSortedMap()
         }
 
 }
