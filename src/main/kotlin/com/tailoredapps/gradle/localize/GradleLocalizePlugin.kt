@@ -44,6 +44,7 @@ class GradleLocalizePlugin : Plugin<Project> {
             description = "Imports strings from a localization sheet"
             group = PLUGIN_TASK_GROUP_NAME
         }
+
         val checkLocalization = project.tasks.create("checkLocalization") { task ->
             task.doLast {
                 runTask(project, extension) { config ->
@@ -55,6 +56,7 @@ class GradleLocalizePlugin : Plugin<Project> {
             group = PLUGIN_TASK_GROUP_NAME
         }
 
+        //add the [checkLocalization] task to the `check` task if not configured otherwise
         if (extension.addToCheckTask) {
             project.tasks.getByName("check").dependsOn(checkLocalization)
         }
