@@ -57,7 +57,7 @@ At least the following configuration must be set, you can find all possible conf
 localizeConfig {
     serviceAccountCredentialsFile = "./google_drive_credentials.json"  // The location of your service-account credentials file (more about that below)
     configuration {
-        main {  // you can define as much product sections as you like, within which you can define a source (sheetId) of the localizations as well as a destination.
+        main {  // you can define as much configuration sections as you like, within which you can define a source (sheetId) of the localizations as well as a destination. The name of a configuration section can be chosen arbitrarily by you.
             sheetId = "1fwRj1ZFPu2XlrDqkaqmIpJulqR5OVFEZnN35a9v37yc"   // The ID of the spreadsheet which contains the localizations
             languageTitles = ["de", "en"]                              // The column header of the languages you want to import
         }
