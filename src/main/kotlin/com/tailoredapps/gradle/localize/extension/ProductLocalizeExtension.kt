@@ -20,15 +20,19 @@ open class ProductLocalizeExtension(
     /**
      * The id of the spreadsheet which contains the localization entries.
      * You can get this id from the link to your spreadsheet.
-     * @see [BaseLocalizeExtension.sheetId]
      */
     var sheetId: String = ""
+
+    /**
+     * The titles worksheets (_tabs_) to parse / take into consideration as source for strings.
+     * If not set, all tabs of the sheet will be considered.
+     */
+    var worksheets: MutableList<String>? = null
 
     /**
      * The list of column titles of the languages in the localization sheet (which is simultaneously
      * also the list of local language folders which are created, so those should be e.g. `de` for german or `en` for
      * english, and the column titles in the sheet should be named the same.
-     * @see [BaseLocalizeExtension.languageTitles]
      */
     var languageTitles: MutableList<String> = mutableListOf()
 
@@ -46,7 +50,6 @@ open class ProductLocalizeExtension(
      *
      * As this here is the flavor dependent config, you might want to use this here to set the target of the given
      * localizations to e.g. `./src/<myFlavorName>/res`.
-     * @see [BaseLocalizeExtension.localizationPath]
      */
     var localizationPath: String = DEFAULT_LOCALIZATION_PATH
 
