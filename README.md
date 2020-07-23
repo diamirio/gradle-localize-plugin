@@ -56,24 +56,70 @@ At least the following configuration must be set, you can find all possible conf
 ```groovy
 localizeConfig {
     serviceAccountCredentialsFile = "./google_drive_credentials.json"  // The location of your service-account credentials file (more about that below)
-    sheetId = "1fwRj1ZFPu2XlrDqkaqmIpJulqR5OVFEZnN35a9v37yc"           // The ID of the spreadsheet which contains the localizations
-    languageTitles = ["de", "en"]                                      // The column header of the languages you want to import
+    configuration {
+        main {  // you can define as much configuration sections as you like, within which you can define a source (sheetId) of the localizations as well as a destination. The name of a configuration section can be chosen arbitrarily by you.
+            sheetId = "1fwRj1ZFPu2XlrDqkaqmIpJulqR5OVFEZnN35a9v37yc"   // The ID of the spreadsheet which contains the localizations
+            languageTitles = ["de", "en"]                              // The column header of the languages you want to import
+        }
+    }
+}
+```
+
+### Multiple configurations
+
+This plugin allows you to configure multiple configurations (for e.g. multiple sources (sheets) for multiple build flavors).
+
+To create an additional configuration, just create a lambda named with the name of your configuration
+(which is not linked to any product flavors / build types, this can be any name you choose), add the
+[product dependent fields](#product-dependent-configuration) you want to set in the lambda.
+
+```groovy
+localizeConfig {
+    serviceAccountCredentialsFile = "./google_drive_credentials.json"  // The location of your service-account credentials file (more about that below)
+
+    configuration {
+        main {                                                         // 'main' is a name you can choose to name this configuration
+            sheetId = "mainSheetIdHere"                                // for the product-configuration 'main', the given sheetId will be used
+            localizationPath = "./src/main/res"                        // for the product-configuration 'main', the localizationPath "./src/main/res" will be used
+            // the serviceAccountCredentialsFile will be taken from the base config above, as it is not defined here.
+        }
+        product1 {                                                     // 'product1' is a name you can choose to name this configuration
+            sheetId = "product1SheetIdHere"                            // for the product-configuration 'product1', the given sheetId will be used
+            localizationPath = "./src/flavor1/res"                     // for the product-configuration 'product1', the localizationPath "./src/flavor1/res" will be used
+            serviceAccountCredentialsFile = "./product1/google_drive_credentials.json"  // the serviceAccountCredentialsFile is overwritten here
+        }
+    }
 }
 ```
 
 
-
 ### Possible configuration fields
+
+#### Base configuration
+_([go to the definition in the code](./src/main/kotlin/com/tailoredapps/gradle/localize/extensions/BaseLocalizeExtension.kt))_
 
 | Field                              | Type           | Description |
 | :--------------------------------- | :------------- | ----------- |
-| `serviceAccountCredentialsFile`    | `String`       | The local path to the credentials file for the service-account. More about this in [Google Drive Service Account Credentials](#google-drive-service-account-credentials) |
+| `serviceAccountCredentialsFile`    | `String`       | The local path to the credentials file for the service-account. More about this in [Google Drive Service Account Credentials](#google-drive-service-account-credentials). Optional, if set in the product specific configuration |
+| `baseLanguage` (default: `en`)     | `String`       | The language (one of the values from `languageTitles`) which should be the default language, which is placed in the `values` folder (so if this is set to `en`, there will be no `values-en` folder created, but the english localizations will be placed in the `values` folder). |
+| `addToCheckTask` (default: `true`) | `Boolean`      | Whether this plugin should add the `checkLocalization` task to the default `check` task. |
+| `addComments` (default: `true`)    | `Boolean`      | Whether the comments from the spreadsheet should be added to the strings.xml files (as comments) as well. |
+
+
+#### Product-dependent configuration
+_([go to the definition in the code](./src/main/kotlin/com/tailoredapps/gradle/localize/extensions/ProductLocalizeExtension.kt))_
+
+| Field                              | Type           | Description |
+| :--------------------------------- | :------------- | ----------- |
+| `serviceAccountCredentialsFile`    | `String`       | The local path to the credentials file for the service-account. More about this in [Google Drive Service Account Credentials](#google-drive-service-account-credentials). Optional, if set in the base configuration |
 | `sheetId`                          | `String`       | The id of the spreadsheet which contains the localization entries. You can get this id from the link to your spreadsheet. e.g. For the spreadsheet-link `https://docs.google.com/spreadsheets/d/1fwRj1ZFPu2XlrDqkaqmIpJulqR5OVFEZnN35a9v37yc/edit`, the `sheetId` is `1fwRj1ZFPu2XlrDqkaqmIpJulqR5OVFEZnN35a9v37yc`.  |
 | `languageTitles`                   | `List<String>` | The list of column titles of the languages in the localization sheet (which is simultaneously also the list of local language folders which are created, so those should be e.g. `de` for german or `en` for english, and the column titles in the sheet should be named the same. |
 | `baseLanguage` (default: `en`)     | `String`       | The language (one of the values from `languageTitles`) which should be the default language, which is placed in the `values` folder (so if this is set to `en`, there will be no `values-en` folder created, but the english localizations will be placed in the `values` folder). |
 | `localizationPath` (default: `./src/main/res`) | `String` | The base directory path to put the localizations in. This defaults to `./src/main/res`, which is the default path within an app module to put the string resources to. Change this if you want to have your localizations put somewhere else. |
-| `addToCheckTask` (default: `true`) | `Boolean`      | Whether this plugin should add the `checkLocalization` task to the default `check` task. |
-| `addComments` (default: `true`)    | `Boolean`      | Whether the comments from the spreadsheet should be added to the strings.xml files (as comments) as well. |
+| `addComments`                      | `Boolean`      | Whether the comments from the spreadsheet should be added to the strings.xml files (as comments) as well. Defaults to the value of the base configuration if not set |
+
+
+
 
 
 ## Tasks

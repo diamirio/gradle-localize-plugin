@@ -15,73 +15,59 @@ class Localize {
     private val androidSheetTransformer: ParsedSheetToAndroidTransformer = ParsedSheetToAndroidTransformer()
     private val stringXmlGenerator: AndroidStringXmlGenerator = AndroidStringXmlGenerator()
 
-    suspend fun localize(
-        sheetId: String,
-        serviceAccountCredentialsFile: File,
-        languageTitles: List<String>,
-        baseLanguage: String,
-        localizationPath: File,
-        addComments: Boolean
-    ) {
+    suspend fun localize(config: LocalizationConfig) {
         val sheet = driveManager.getSheet(
-            serviceAccountCredentialsFile = serviceAccountCredentialsFile,
-            sheetId = sheetId
+            serviceAccountCredentialsFile = config.serviceAccountCredentialsFile,
+            sheetId = config.sheetId
         )
         val parsedSheet = localizationSheetParser.parseSheet(
             sheet = sheet,
-            languageColumnTitles = languageTitles
+            languageColumnTitles = config.languageTitles
         )
 
-        languageTitles.forEachParallel { language ->
+        config.languageTitles.forEachParallel { language ->
             val transformedSheet = androidSheetTransformer.transformForLanguage(
                 language = language,
                 parsedSheet = parsedSheet
             )
             val stringXmlContent = stringXmlGenerator.androidValuesToStringsXml(
                 values = transformedSheet,
-                addComments = addComments
+                addComments = config.addComments
             )
 
             val file = getStringsXmlFileOrThrow(
-                localizationPath = localizationPath,
-                localizationIdentifier = if (language == baseLanguage) null else language
+                localizationPath = config.localizationPath,
+                localizationIdentifier = if (language == config.baseLanguage) null else language
             )
             file.writeText(stringXmlContent)
         }
     }
 
-    suspend fun check(
-        sheetId: String,
-        serviceAccountCredentialsFile: File,
-        languageTitles: List<String>,
-        baseLanguage: String,
-        localizationPath: File,
-        addComments: Boolean
-    ) {
+    suspend fun check(config: LocalizationConfig) {
         val sheet = driveManager.getSheet(
-            serviceAccountCredentialsFile = serviceAccountCredentialsFile,
-            sheetId = sheetId
+            serviceAccountCredentialsFile = config.serviceAccountCredentialsFile,
+            sheetId = config.sheetId
         )
         val parsedSheet = localizationSheetParser.parseSheet(
             sheet = sheet,
-            languageColumnTitles = languageTitles
+            languageColumnTitles = config.languageTitles
         )
 
         val localizationsWithDifferences = mutableListOf<String>()
 
-        languageTitles.forEachParallel { language ->
+        config.languageTitles.forEachParallel { language ->
             val transformedSheet = androidSheetTransformer.transformForLanguage(
                 language = language,
                 parsedSheet = parsedSheet
             )
             val stringXmlContent = stringXmlGenerator.androidValuesToStringsXml(
                 values = transformedSheet,
-                addComments = addComments
+                addComments = config.addComments
             )
 
             val file = getStringsXmlFileOrThrow(
-                localizationPath = localizationPath,
-                localizationIdentifier = if (language == baseLanguage) null else language
+                localizationPath = config.localizationPath,
+                localizationIdentifier = if (language == config.baseLanguage) null else language
             )
 
             if (stringXmlContent != file.readText()) {
