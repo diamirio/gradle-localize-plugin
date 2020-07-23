@@ -6,6 +6,7 @@ data class LocalizationConfig(
     val productName: String,
     val serviceAccountCredentialsFile: File,
     val sheetId: String,
+    val worksheets: List<String>?,
     val languageTitles: List<String>,
     val baseLanguage: String,
     val localizationPath: File,

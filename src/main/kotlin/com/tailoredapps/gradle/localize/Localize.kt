@@ -22,6 +22,7 @@ class Localize {
         )
         val parsedSheet = localizationSheetParser.parseSheet(
             sheet = sheet,
+            worksheets = config.worksheets,
             languageColumnTitles = config.languageTitles
         )
 
@@ -50,6 +51,7 @@ class Localize {
         )
         val parsedSheet = localizationSheetParser.parseSheet(
             sheet = sheet,
+            worksheets = config.worksheets,
             languageColumnTitles = config.languageTitles
         )
 

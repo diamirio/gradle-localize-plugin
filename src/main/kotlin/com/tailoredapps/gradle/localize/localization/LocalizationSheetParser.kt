@@ -78,62 +78,82 @@ class LocalizationSheetParser {
      * Parses the given [sheet] for localizations.
      *
      * @param sheet The [DriveManager.Sheet] to parse
+     * @param worksheets The list of tabs ("worksheets") to parse / return.
+     * If `null`, all tabs will be taken,
+     * Otherwise (non-null): all tabs named as one of the items in [tabs] will be parsed and returned
      * @param languageColumnTitles The sheet column titles for the localization to parse
      *
      * @return A [ParsedSheet] object which contains all localization entries found in the given [sheet] for the given
      * [languageColumnTitles].
      */
-    fun parseSheet(sheet: DriveManager.Sheet, languageColumnTitles: List<String>): ParsedSheet {
-        val worksheets = sheet.worksheets.map { worksheet ->
-            val firstLine = worksheet.cells.firstOrNull()
-                ?: throw IllegalStateException("Worksheet ${worksheet.title} does not contain a header line")
-
-            val indexOfPlatforms = Platform.values()
-                .map { platform -> platform to firstLine.indexOfFirstOrNull(platform.identifier) }
-                .toMap()
-
-            if (indexOfPlatforms.none { (_, index) -> index != null }) {
-                throw IllegalStateException("Worksheet '${worksheet.title}'s first line (a.k.a. the header line) does not contain a column with any of '${Platform.values().map { it.identifier }.joinToString()}'. At least a header for one platform must be present.")
+    fun parseSheet(
+        sheet: DriveManager.Sheet,
+        worksheets: List<String>?,
+        languageColumnTitles: List<String>
+    ): ParsedSheet {
+        val parsedWorksheets = sheet.worksheets
+            .let { allWorksheets ->
+                if (worksheets != null) {
+                    allWorksheets.filter { worksheets.contains(it.title) }
+                } else {
+                    allWorksheets
+                }
             }
+            .map { worksheet ->
+                val firstLine = worksheet.cells.firstOrNull()
+                    ?: throw IllegalStateException("Worksheet ${worksheet.title} does not contain a header line")
 
-            val indexOfLanguages = languageColumnTitles
-                .map { languageIdentifier ->
-                    languageIdentifier to firstLine.indexOfFirstOrThrow(
-                        worksheet.title,
-                        languageIdentifier
+                val indexOfPlatforms = Platform.values()
+                    .map { platform -> platform to firstLine.indexOfFirstOrNull(platform.identifier) }
+                    .toMap()
+
+                if (indexOfPlatforms.none { (_, index) -> index != null }) {
+                    throw IllegalStateException(
+                        "Worksheet '${worksheet.title}'s first line (a.k.a. the header line) does not contain a column with any of '${Platform.values()
+                            .map { it.identifier }
+                            .joinToString()}'. At least a header for one platform must be present."
                     )
                 }
-                .toMap()
 
-            val indexOfComment =
-                firstLine.indexOfFirst { it == TITLE_IDENTIFIER_COMMENT }.let { if (it == -1) null else it }
-
-            ParsedSheet.WorkSheet(
-                title = worksheet.title,
-                entries = worksheet.cells
-                    .asSequence()
-                    .drop(1)
-                    .filter { it.size > 1 }
-                    .map { row ->
-                        ParsedSheet.LocalizationEntry(
-                            identifier = Platform.values()
-                                .mapNotNull { platform ->
-                                    indexOfPlatforms[platform]?.let { index -> platform to row[index] }
-                                }
-                                .toMap(),
-                            values = indexOfLanguages
-                                .map { (languageIdentifier, columnIndex) -> languageIdentifier to row[columnIndex] }
-                                .toMap(),
-                            comment = indexOfComment?.let { index -> row.getOrNull(index) }
+                val indexOfLanguages = languageColumnTitles
+                    .map { languageIdentifier ->
+                        languageIdentifier to firstLine.indexOfFirstOrThrow(
+                            worksheet.title,
+                            languageIdentifier
                         )
                     }
-                    .filter { it.identifier.any { (_, identifier) -> identifier != null } }
-                    .toList()
-            )
-        }
+                    .toMap()
+
+                val indexOfComment =
+                    firstLine.indexOfFirst { it == TITLE_IDENTIFIER_COMMENT }
+                        .let { if (it == -1) null else it }
+
+                ParsedSheet.WorkSheet(
+                    title = worksheet.title,
+                    entries = worksheet.cells
+                        .asSequence()
+                        .drop(1)
+                        .filter { it.size > 1 }
+                        .map { row ->
+                            ParsedSheet.LocalizationEntry(
+                                identifier = Platform.values()
+                                    .mapNotNull { platform ->
+                                        indexOfPlatforms[platform]?.let { index -> platform to row[index] }
+                                    }
+                                    .toMap(),
+                                values = indexOfLanguages
+                                    .map { (languageIdentifier, columnIndex) -> languageIdentifier to row[columnIndex] }
+                                    .toMap(),
+                                comment = indexOfComment?.let { index -> row.getOrNull(index) }
+                            )
+                        }
+                        .filter { it.identifier.any { (_, identifier) -> identifier != null } }
+                        .toList()
+                )
+            }
 
         return ParsedSheet(
-            worksheets = worksheets
+            worksheets = parsedWorksheets
         )
     }
 

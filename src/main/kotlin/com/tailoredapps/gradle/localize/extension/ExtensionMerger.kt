@@ -23,6 +23,7 @@ class ExtensionMerger(
                 serviceAccountCredentialsPath
             ),
             sheetId = productConfig.sheetId,
+            worksheets = productConfig.worksheets?.toList(),
             languageTitles = productConfig.languageTitles,
             baseLanguage = productConfig.baseLanguage ?: baseConfig.baseLanguage,
             localizationPath = pathToFileManager.pathToFile(localizationPath),

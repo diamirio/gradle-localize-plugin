@@ -53,6 +53,7 @@ class ExtensionMergerTest {
             productName = "mock",
             serviceAccountCredentialsFile = File("/tmp/./some-service-accounts-file.json"),
             sheetId = "ASDF1234!",
+            worksheets = null,
             languageTitles = listOf("de", "en", "ru"),
             baseLanguage = "ru",
             localizationPath = File("/tmp", "./src/main/some-custom-res"),
@@ -66,6 +67,7 @@ class ExtensionMergerTest {
         val mockProductFlavor = ProductLocalizeExtension("someProductName").apply {
             serviceAccountCredentialsFile = "./some-service-accounts-file-for-mock.json"
             sheetId = "SHEET_FOR_MOCK"
+            worksheets = mutableListOf("firstTab", "secondTab", "thirdTab")
             languageTitles = mutableListOf("de", "en", "ru", "it")
             baseLanguage = "it"
             localizationPath = "./src/main/some-custom-res-for-mock"
@@ -90,6 +92,7 @@ class ExtensionMergerTest {
             productName = "someProductName",
             serviceAccountCredentialsFile = File("/tmp/./some-service-accounts-file-for-mock.json"),
             sheetId = "SHEET_FOR_MOCK",
+            worksheets = listOf("firstTab", "secondTab", "thirdTab"),
             languageTitles = listOf("de", "en", "ru", "it"),
             baseLanguage = "it",
             localizationPath = File("/tmp", "./src/main/some-custom-res-for-mock"),
