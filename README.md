@@ -132,7 +132,7 @@ the existing `string.xml` files with the new generated files.
 
 #### `checkLocalization`
 
-Fetches the localizationes from the spreadsheet and checks whether the strings in the `strings.xml` files are still 
+Fetches the localizations from the spreadsheet and checks whether the strings in the `strings.xml` files are still
 up-to-date (and fails if not).
 
 
