@@ -83,10 +83,10 @@ localizeConfig {
             localizationPath = "./src/main/res"                        // for the product-configuration 'main', the localizationPath "./src/main/res" will be used
             // the serviceAccountCredentialsFile will be taken from the base config above, as it is not defined here.
         }
-        product1 {                                                     // 'product2' is a name you can choose to name this configuration
-            sheetId = "product1SheetIdHere"                            // for the product-configuration 'product2', the given sheetId will be used
-            localizationPath = "./src/flavor1/res"                     // for the product-configuration 'product2', the localizationPath "./src/flavor1/res" will be used
-            // the serviceAccountCredentialsFile will be taken from the base config above, as it is not defined here.
+        product1 {                                                     // 'product1' is a name you can choose to name this configuration
+            sheetId = "product1SheetIdHere"                            // for the product-configuration 'product1', the given sheetId will be used
+            localizationPath = "./src/flavor1/res"                     // for the product-configuration 'product1', the localizationPath "./src/flavor1/res" will be used
+            serviceAccountCredentialsFile = "./product1/google_drive_credentials.json"  // the serviceAccountCredentialsFile is overwritten here
         }
     }
 }
