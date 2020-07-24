@@ -74,9 +74,9 @@ class DriveManager {
                 continuation.resume(response)
             } catch (throwable: Throwable) {
                 val exception = if (throwable is GoogleJsonResponseException) {
-                    when {
-                        throwable.details.code == 404 -> SpreadsheetNotFoundException(sheetId, throwable)
-                        throwable.details.code == 403 -> AccessForbiddenException(sheetId, throwable)
+                    when (throwable.details.code) {
+                        404 -> SpreadsheetNotFoundException(sheetId, throwable)
+                        403 -> AccessForbiddenException(sheetId, throwable)
                         else -> RuntimeException("Error loading spreadsheet with id $sheetId", throwable)
                     }
                 } else {

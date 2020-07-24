@@ -57,9 +57,7 @@ class ParsedSheetToAndroidTransformer {
             worksheet.entries
                 .asSequence()
                 .filter { it.identifier[LocalizationSheetParser.Platform.Android] != null }
-                .map { entry ->
-                    parseToAndroidValue(entry, language)
-                }
+                .map { entry -> parseToAndroidValue(entry, language) }
                 .toList()
         }
     }
@@ -69,7 +67,7 @@ class ParsedSheetToAndroidTransformer {
     }
 
 
-    internal fun parseToAndroidValue(
+    private fun parseToAndroidValue(
         entry: LocalizationSheetParser.ParsedSheet.LocalizationEntry,
         language: String
     ): AndroidValue {
