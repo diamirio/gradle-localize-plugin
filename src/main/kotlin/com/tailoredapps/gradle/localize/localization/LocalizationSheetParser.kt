@@ -80,11 +80,14 @@ class LocalizationSheetParser {
      * @param sheet The [DriveManager.Sheet] to parse
      * @param worksheets The list of tabs ("worksheets") to parse / return.
      * If `null`, all tabs will be taken,
-     * Otherwise (non-null): all tabs named as one of the items in [tabs] will be parsed and returned
+     * Otherwise (non-null): all tabs named as one of the items in [tabs] will be parsed and
+     * returned.
      * @param languageColumnTitles The sheet column titles for the localization to parse
      *
-     * @return A [ParsedSheet] object which contains all localization entries found in the given [sheet] for the given
-     * [languageColumnTitles].
+     * @return A [ParsedSheet] object which contains all localization entries found in the given
+     * [sheet] for the given [languageColumnTitles]. This will for all entries contain map entries
+     * for all languages & identifiers, but the values may be null if they are not set in the
+     * worksheet.
      */
     fun parseSheet(
         sheet: DriveManager.Sheet,
@@ -138,11 +141,15 @@ class LocalizationSheetParser {
                             ParsedSheet.LocalizationEntry(
                                 identifier = Platform.values()
                                     .mapNotNull { platform ->
-                                        indexOfPlatforms[platform]?.let { index -> platform to row[index] }
+                                        indexOfPlatforms[platform]?.let { index ->
+                                            platform to row.getOrNull(index)
+                                        }
                                     }
                                     .toMap(),
                                 values = indexOfLanguages
-                                    .map { (languageIdentifier, columnIndex) -> languageIdentifier to row[columnIndex] }
+                                    .map { (languageIdentifier, columnIndex) ->
+                                        languageIdentifier to row.getOrNull(columnIndex)
+                                    }
                                     .toMap(),
                                 comment = indexOfComment?.let { index -> row.getOrNull(index) }
                             )
