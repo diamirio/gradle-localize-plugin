@@ -16,11 +16,15 @@ class AndroidStringXmlGenerator {
      * file content.
      * @param addComments Whether the comments of the [AndroidValue][ParsedSheetToAndroidTransformer.AndroidValue] (if
      * present) should be added as XML comments to the file as well.
+     * @param escapeApostrophes Whether apostrophes in the [values] should be escaped. The default
+     * option should be true here, but for legacy reasons when migrating from the fastlane plugin,
+     * the apostrophes may already have been escaped in the spreadsheet.
      * @return The content for a `strings.xml` file for the given [values].
      */
     suspend fun androidValuesToStringsXml(
         values: List<ParsedSheetToAndroidTransformer.AndroidValue>,
-        addComments: Boolean
+        addComments: Boolean,
+        escapeApostrophes: Boolean = true
     ): String {
         return suspendCancellableCoroutine<String> { continuation ->
             val string = StringBuilder().apply {
@@ -38,7 +42,7 @@ class AndroidStringXmlGenerator {
                         is ParsedSheetToAndroidTransformer.AndroidValue.Plain -> {
                             appendCommentIfPresent(androidValue.comment, addComments = addComments)
                             append("$INDENT<string name=\"${androidValue.identifier}\">")
-                            append(androidValue.value.escapeSingleApostrophes().wrapInCData())
+                            append(androidValue.value.escapeApostrophes(escapeApostrophes).wrapInCData())
                             append("</string>\n")
                         }
                         is ParsedSheetToAndroidTransformer.AndroidValue.Array -> {
@@ -46,7 +50,7 @@ class AndroidStringXmlGenerator {
                             append("$INDENT<string-array name=\"${androidValue.identifier}\">\n")
                             androidValue.values.forEach { value ->
                                 append("$INDENT$INDENT<item>")
-                                append(value.escapeSingleApostrophes().wrapInCData())
+                                append(value.escapeApostrophes(escapeApostrophes).wrapInCData())
                                 append("</item>\n")
                             }
                             append("$INDENT</string-array>\n")
@@ -56,7 +60,7 @@ class AndroidStringXmlGenerator {
                             append("$INDENT<plurals name=\"${androidValue.identifier}\">\n")
                             androidValue.entries.forEach { (quantity, value) ->
                                 append("$INDENT$INDENT<item quantity=\"$quantity\">")
-                                append(value.escapeSingleApostrophes().wrapInCData())
+                                append(value.escapeApostrophes(escapeApostrophes).wrapInCData())
                                 append("</item>\n")
                             }
                             append("$INDENT</plurals>\n")
@@ -75,6 +79,13 @@ class AndroidStringXmlGenerator {
         }
     }
 
-    private fun String.escapeSingleApostrophes(): String = this.replace("'", "\\'")
+    private fun String.escapeApostrophes(escapeApostrophes: Boolean): String {
+        return if(escapeApostrophes) {
+            this.replace("'", "\\'")
+        } else {
+            this
+        }
+    }
+
     private fun String.wrapInCData(): String = "<![CDATA[$this]]>"
 }

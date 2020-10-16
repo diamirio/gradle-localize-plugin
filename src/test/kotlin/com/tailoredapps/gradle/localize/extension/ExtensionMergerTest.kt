@@ -58,7 +58,42 @@ class ExtensionMergerTest {
             baseLanguage = "ru",
             localizationPath = File("/tmp", "./src/main/some-custom-res"),
             addToCheckTask = true,
+            addComments = true,
+            escapeApostrophes = true
+        )
+    }
+
+    @Test
+    fun `empty base config with one flavor config with escape apostrophes disabled`() {
+        val productConfig = ProductLocalizeExtension("mock").apply {
+            serviceAccountCredentialsFile = "./some-service-accounts-file.json"
+            sheetId = "ASDF1234!"
+            languageTitles = mutableListOf("de", "en", "ru")
+            baseLanguage = "ru"
+            localizationPath = "./src/main/some-custom-res"
             addComments = true
+            escapeApostrophes = false
+        }
+        val baseConfig = prepareBaseLocalizeExtension(listOf(productConfig))
+
+        val configForMock = extensionMerger.merge(
+            baseConfig = baseConfig,
+            productConfigName = "mock",
+            productConfig = productConfig
+        )
+
+        configForMock.shouldNotBeNull()
+        configForMock shouldBeEqualTo LocalizationConfig(
+            productName = "mock",
+            serviceAccountCredentialsFile = File("/tmp/./some-service-accounts-file.json"),
+            sheetId = "ASDF1234!",
+            worksheets = null,
+            languageTitles = listOf("de", "en", "ru"),
+            baseLanguage = "ru",
+            localizationPath = File("/tmp", "./src/main/some-custom-res"),
+            addToCheckTask = true,
+            addComments = true,
+            escapeApostrophes = false
         )
     }
 
@@ -72,6 +107,7 @@ class ExtensionMergerTest {
             baseLanguage = "it"
             localizationPath = "./src/main/some-custom-res-for-mock"
             addComments = false
+            escapeApostrophes = true
         }
         val baseConfig = prepareBaseLocalizeExtension(
             listOf(mockProductFlavor)
@@ -80,6 +116,7 @@ class ExtensionMergerTest {
             baseLanguage = "ru"
             addToCheckTask = true
             addComments = true
+            escapeApostrophes = false
         }
         val configForMock = extensionMerger.merge(
             baseConfig = baseConfig,
@@ -97,7 +134,8 @@ class ExtensionMergerTest {
             baseLanguage = "it",
             localizationPath = File("/tmp", "./src/main/some-custom-res-for-mock"),
             addToCheckTask = true,
-            addComments = false
+            addComments = false,
+            escapeApostrophes = true
         )
     }
 

@@ -96,18 +96,19 @@ localizeConfig {
 ### Possible configuration fields
 
 #### Base configuration
-_([go to the definition in the code](./src/main/kotlin/com/tailoredapps/gradle/localize/extensions/BaseLocalizeExtension.kt))_
+_([go to the definition in the code](./blob/master/src/main/kotlin/com/tailoredapps/gradle/localize/extension/BaseLocalizeExtension.kt))_
 
-| Field                              | Type           | Description |
-| :--------------------------------- | :------------- | ----------- |
-| `serviceAccountCredentialsFile`    | `String`       | The local path to the credentials file for the service-account. More about this in [Google Drive Service Account Credentials](#google-drive-service-account-credentials). Optional, if set in the product specific configuration |
-| `baseLanguage` (default: `en`)     | `String`       | The language (one of the values from `languageTitles`) which should be the default language, which is placed in the `values` folder (so if this is set to `en`, there will be no `values-en` folder created, but the english localizations will be placed in the `values` folder). |
-| `addToCheckTask` (default: `true`) | `Boolean`      | Whether this plugin should add the `checkLocalization` task to the default `check` task. |
-| `addComments` (default: `true`)    | `Boolean`      | Whether the comments from the spreadsheet should be added to the strings.xml files (as comments) as well. |
+| Field                                 | Type           | Description |
+| :------------------------------------ | :------------- | ----------- |
+| `serviceAccountCredentialsFile`       | `String`       | The local path to the credentials file for the service-account. More about this in [Google Drive Service Account Credentials](#google-drive-service-account-credentials). Optional, if set in the product specific configuration |
+| `baseLanguage` (default: `en`)        | `String`       | The language (one of the values from `languageTitles`) which should be the default language, which is placed in the `values` folder (so if this is set to `en`, there will be no `values-en` folder created, but the english localizations will be placed in the `values` folder). |
+| `addToCheckTask` (default: `true`)    | `Boolean`      | Whether this plugin should add the `checkLocalization` task to the default `check` task. |
+| `addComments` (default: `true`)       | `Boolean`      | Whether the comments from the spreadsheet should be added to the strings.xml files (as comments) as well. |
+| `escapeApostrophes` (default: `true`) | `Boolean`      | Whether apostrophes in the spreadsheet should be escaped. |
 
 
 #### Product-dependent configuration
-_([go to the definition in the code](./src/main/kotlin/com/tailoredapps/gradle/localize/extensions/ProductLocalizeExtension.kt))_
+_([go to the definition in the code](./blob/master/src/main/kotlin/com/tailoredapps/gradle/localize/extensions/ProductLocalizeExtension.kt))_
 
 | Field                                          | Type           | Description |
 | :--------------------------------------------- | :------------- | ----------- |
@@ -118,6 +119,7 @@ _([go to the definition in the code](./src/main/kotlin/com/tailoredapps/gradle/l
 | `baseLanguage` (default: `en`)                 | `String`       | The language (one of the values from `languageTitles`) which should be the default language, which is placed in the `values` folder (so if this is set to `en`, there will be no `values-en` folder created, but the english localizations will be placed in the `values` folder). |
 | `localizationPath` (default: `./src/main/res`) | `String`       | The base directory path to put the localizations in. This defaults to `./src/main/res`, which is the default path within an app module to put the string resources to. Change this if you want to have your localizations put somewhere else. |
 | `addComments`                                  | `Boolean`      | Whether the comments from the spreadsheet should be added to the strings.xml files (as comments) as well. Defaults to the value of the base configuration if not set |
+| `escapeApostrophes` (default: `true`)          | `Boolean`      | Whether apostrophes in the spreadsheet should be escaped. |
 
 
 
