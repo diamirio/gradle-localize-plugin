@@ -521,5 +521,105 @@ internal class AndroidStringXmlGeneratorTest {
 """
     }
 
+    @Test
+    fun `sheet values with apostrophe and escapeApostrophes enabled`() {
+        val values = listOf(
+            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                identifier = "example.1",
+                value = "This is a sample's text",
+                comment = "sample comment"
+            ),
+            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                identifier = "example.2",
+                value = "This is a sample\\'s text",
+                comment = null
+            ),
+            ParsedSheetToAndroidTransformer.AndroidValue.Array(
+                identifier = "strings.array.test",
+                values = listOf("test0", "test1", "test2"),
+                comment = "String array example"
+            ),
+            ParsedSheetToAndroidTransformer.AndroidValue.Plural(
+                identifier = "strings.array.test",
+                entries = listOf("one" to "example's", "other" to "example\\'s"),
+                comment = "String array example"
+            )
+        )
+
+        val fileContent = runBlocking {
+            generator.androidValuesToStringsXml(
+                values = values,
+                addComments = false,
+                escapeApostrophes = true
+            )
+        }
+
+        fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="example.1"><![CDATA[This is a sample\'s text]]></string>
+    <string name="example.2"><![CDATA[This is a sample\\'s text]]></string>
+    <string-array name="strings.array.test">
+        <item><![CDATA[test0]]></item>
+        <item><![CDATA[test1]]></item>
+        <item><![CDATA[test2]]></item>
+    </string-array>
+    <plurals name="strings.array.test">
+        <item quantity="one"><![CDATA[example\'s]]></item>
+        <item quantity="other"><![CDATA[example\\'s]]></item>
+    </plurals>
+</resources>
+"""
+    }
+
+    @Test
+    fun `sheet values with apostrophe and escapeApostrophes disabled`() {
+        val values = listOf(
+            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                identifier = "example.1",
+                value = "This is a sample's text",
+                comment = "sample comment"
+            ),
+            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                identifier = "example.2",
+                value = "This is a sample\\'s text",
+                comment = null
+            ),
+            ParsedSheetToAndroidTransformer.AndroidValue.Array(
+                identifier = "strings.array.test",
+                values = listOf("test0", "test1", "test2"),
+                comment = "String array example"
+            ),
+            ParsedSheetToAndroidTransformer.AndroidValue.Plural(
+                identifier = "strings.array.test",
+                entries = listOf("one" to "example's", "other" to "example\\'s"),
+                comment = "String array example"
+            )
+        )
+
+        val fileContent = runBlocking {
+            generator.androidValuesToStringsXml(
+                values = values,
+                addComments = false,
+                escapeApostrophes = false
+            )
+        }
+
+        fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="example.1"><![CDATA[This is a sample's text]]></string>
+    <string name="example.2"><![CDATA[This is a sample\'s text]]></string>
+    <string-array name="strings.array.test">
+        <item><![CDATA[test0]]></item>
+        <item><![CDATA[test1]]></item>
+        <item><![CDATA[test2]]></item>
+    </string-array>
+    <plurals name="strings.array.test">
+        <item quantity="one"><![CDATA[example's]]></item>
+        <item quantity="other"><![CDATA[example\'s]]></item>
+    </plurals>
+</resources>
+"""
+    }
+
 
 }

@@ -58,4 +58,11 @@ open class ProductLocalizeExtension(
      * @see [BaseLocalizeExtension.addComments]
      */
     var addComments: Boolean? = null
+
+    /**
+     * Whether apostrophes should be escaped before adding the values to the strings.xml files.
+     * Defaults to true, should only be set to false if, for legacy reasons, the spreadsheet already contains escaped apostrophes.
+     * @see [BaseLocalizeExtension.escapeApostrophes]
+     */
+    var escapeApostrophes: Boolean? = true
 }

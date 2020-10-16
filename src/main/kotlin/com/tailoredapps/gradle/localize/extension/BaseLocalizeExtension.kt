@@ -12,12 +12,14 @@ import org.gradle.api.NamedDomainObjectContainer
  * @param addToCheckTask Whether this plugin should add the `checkLocalization` task to the default `check` task.
  * @param addComments Whether the comments from the spreadsheet should be added to the strings.xml files (as comments)
  * as well.
+ * @param escapeApostrophes Whether apostrophes should be escaped.
  */
 open class BaseLocalizeExtension(
     var serviceAccountCredentialsFile: String = "",
     var baseLanguage: String = DEFAULT_BASE_LANGUAGE,
     var addToCheckTask: Boolean = true,
-    var addComments: Boolean = true
+    var addComments: Boolean = true,
+    var escapeApostrophes: Boolean = true
 ) {
 
     /**
