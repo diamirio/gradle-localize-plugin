@@ -17,6 +17,12 @@ class Localize {
         ParsedSheetToAndroidTransformer()
     private val stringXmlGenerator: AndroidStringXmlGenerator = AndroidStringXmlGenerator()
 
+    /**
+     * Fetches the localizations according to the given [config] and saves them into the files
+     * given in the [config].
+     * This will write the files according to the [config] with the fetched localization strings.
+     * @param config the configuration
+     */
     suspend fun localize(config: LocalizationConfig) {
         val sheet = driveManager.getSheet(
             serviceAccountCredentialsFile = config.serviceAccountCredentialsFile,
@@ -46,6 +52,15 @@ class Localize {
         }
     }
 
+    /**
+     * Fetches the localizations according to the given [config] and compares it to the local
+     * strings.xml files defined in the [config].
+     *
+     * If they match up, the method will return. If there are changes detected, this will throw an
+     * Exception.
+     *
+     * @throws RuntimeException
+     */
     suspend fun check(config: LocalizationConfig) {
         val sheet = driveManager.getSheet(
             serviceAccountCredentialsFile = config.serviceAccountCredentialsFile,
