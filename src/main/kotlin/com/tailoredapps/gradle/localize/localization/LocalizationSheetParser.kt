@@ -47,25 +47,26 @@ class LocalizationSheetParser {
         /**
          * The localization sheet column title for the `iOS` localization identifier
          */
-        const val TITLE_IDENTIFIER_IOS = "Identifier iOS"
+        private const val TITLE_IDENTIFIER_IOS = "Identifier iOS"
 
         /**
          * The localization sheet column title for the `Android` localization identifier
          */
-        const val TITLE_IDENTIFIER_ANDROID = "Identifier Android"
+        private const val TITLE_IDENTIFIER_ANDROID = "Identifier Android"
 
         /**
          * The localization sheet column title for the `Web` localization identifier.
          *
          * Yes, the typo in "Identifier" is known, but also in the original fastlane plugin / sheet example, so never touch a running system :shrug:
          */
-        const val TITLE_IDENTIFIER_WEB_OLD = "Identifer Web"
-        const val TITLE_IDENTIFIER_WEB_NEW = "Identifier Web"
+        private const val TITLE_IDENTIFIER_WEB_OLD = "Identifer Web"
+        private const val TITLE_IDENTIFIER_WEB_NEW = "Identifier Web"
 
         /**
          * The localization sheet column title for the comments.
          */
-        const val TITLE_IDENTIFIER_COMMENT = "Kommentar"
+        private const val TITLE_IDENTIFIER_COMMENT_DE = "Kommentar"
+        private const val TITLE_IDENTIFIER_COMMENT_EN = "Comment"
     }
 
     enum class Platform {
@@ -83,6 +84,11 @@ class LocalizationSheetParser {
                     ?: this.indexOfFirstOrNull(TITLE_IDENTIFIER_WEB_OLD)
             }
         }
+    }
+
+    private fun List<String?>.getIndexOfCommentColumnOrNull(): Int? {
+        return this.indexOfFirstOrNull(TITLE_IDENTIFIER_COMMENT_EN)
+            ?: this.indexOfFirstOrNull(TITLE_IDENTIFIER_COMMENT_DE)
     }
 
 
@@ -127,8 +133,8 @@ class LocalizationSheetParser {
                         "Worksheet '${worksheet.title}'s first line (a.k.a. the header line) does not contain a column with any of " +
                                 "'$TITLE_IDENTIFIER_ANDROID'," +
                                 "'$TITLE_IDENTIFIER_IOS'," +
-                                "'$TITLE_IDENTIFIER_WEB_NEW' (or for legacy reasons also '$TITLE_IDENTIFIER_WEB_OLD')" +
-                                ". At least a header for one platform must be present."
+                                "'$TITLE_IDENTIFIER_WEB_NEW' (or for legacy reasons also '$TITLE_IDENTIFIER_WEB_OLD'). " +
+                                "At least a header for one platform must be present."
                     )
                 }
 
@@ -141,9 +147,7 @@ class LocalizationSheetParser {
                     }
                     .toMap()
 
-                val indexOfComment =
-                    firstLine.indexOfFirst { it == TITLE_IDENTIFIER_COMMENT }
-                        .let { if (it == -1) null else it }
+                val indexOfComment = firstLine.getIndexOfCommentColumnOrNull()
 
                 ParsedSheet.WorkSheet(
                     title = worksheet.title,

@@ -692,4 +692,84 @@ class LocalizationSheetParserTest {
         }
     }
 
+    @Test
+    fun `parsing web identifier with en comment identifier`() {
+        val sheet = DriveManager.Sheet(
+            id = "some-id",
+            worksheets = listOf(
+                DriveManager.Sheet.WorkSheet(
+                    title = "First Worksheet",
+                    cells = listOf(
+                        listOf(
+                            "Identifier iOS",
+                            "Identifier Android",
+                            "Identifier Web",
+                            "de",
+                            "en",
+                            "fr",
+                            "Comment"
+                        ),
+                        listOf("//This is a comment in the worksheet"),
+                        listOf(
+                            null,
+                            "key1",
+                            "key1_web",
+                            "German Translation",
+                            "English Translation",
+                            "French Translation",
+                            "And also a comment"
+                        ),
+                        listOf(
+                            null,
+                            "key2",
+                            "key2_web",
+                            "German Translation",
+                            "English Translation",
+                            "French Translation"
+                        )
+                    )
+                )
+            )
+        )
+        val parsedSheet = localizationSheetParser.parseSheet(
+            sheet = sheet,
+            worksheets = null,
+            languageColumnTitles = listOf("de", "en", "fr")
+        )
+
+        parsedSheet.worksheets.size shouldBeEqualTo 1
+        val parsedWorksheet = parsedSheet.worksheets.first()
+        parsedWorksheet.title shouldBeEqualTo "First Worksheet"
+        parsedWorksheet.entries.size shouldBeEqualTo 2
+
+        parsedWorksheet.entries[0].also { entry ->
+            entry.identifier shouldBeEqualTo mapOf(
+                LocalizationSheetParser.Platform.iOS to null,
+                LocalizationSheetParser.Platform.Android to "key1",
+                LocalizationSheetParser.Platform.Web to "key1_web"
+            )
+            entry.values shouldBeEqualTo mapOf(
+                "de" to "German Translation",
+                "en" to "English Translation",
+                "fr" to "French Translation"
+            )
+            entry.comment.shouldNotBeNull()
+            entry.comment shouldBeEqualTo "And also a comment"
+        }
+
+        parsedWorksheet.entries[1].also { entry ->
+            entry.identifier shouldBeEqualTo mapOf(
+                LocalizationSheetParser.Platform.iOS to null,
+                LocalizationSheetParser.Platform.Android to "key2",
+                LocalizationSheetParser.Platform.Web to "key2_web"
+            )
+            entry.values shouldBeEqualTo mapOf(
+                "de" to "German Translation",
+                "en" to "English Translation",
+                "fr" to "French Translation"
+            )
+            entry.comment.shouldBeNull()
+        }
+    }
+
 }
