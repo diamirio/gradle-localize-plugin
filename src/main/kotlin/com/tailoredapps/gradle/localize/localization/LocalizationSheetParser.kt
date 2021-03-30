@@ -47,30 +47,48 @@ class LocalizationSheetParser {
         /**
          * The localization sheet column title for the `iOS` localization identifier
          */
-        const val TITLE_IDENTIFIER_IOS = "Identifier iOS"
+        private const val TITLE_IDENTIFIER_IOS = "Identifier iOS"
 
         /**
          * The localization sheet column title for the `Android` localization identifier
          */
-        const val TITLE_IDENTIFIER_ANDROID = "Identifier Android"
+        private const val TITLE_IDENTIFIER_ANDROID = "Identifier Android"
 
         /**
          * The localization sheet column title for the `Web` localization identifier.
          *
          * Yes, the typo in "Identifier" is known, but also in the original fastlane plugin / sheet example, so never touch a running system :shrug:
          */
-        const val TITLE_IDENTIFIER_WEB = "Identifer Web"
+        private const val TITLE_IDENTIFIER_WEB_OLD = "Identifer Web"
+        private const val TITLE_IDENTIFIER_WEB_NEW = "Identifier Web"
 
         /**
          * The localization sheet column title for the comments.
          */
-        const val TITLE_IDENTIFIER_COMMENT = "Kommentar"
+        private const val TITLE_IDENTIFIER_COMMENT_DE = "Kommentar"
+        private const val TITLE_IDENTIFIER_COMMENT_EN = "Comment"
     }
 
-    enum class Platform(val identifier: String) {
-        iOS(TITLE_IDENTIFIER_IOS),
-        Android(TITLE_IDENTIFIER_ANDROID),
-        Web(TITLE_IDENTIFIER_WEB)
+    enum class Platform {
+        iOS,
+        Android,
+        Web
+    }
+
+    private fun List<String?>.getIndexOfPlatformColumnOrNull(platform: Platform): Int? {
+        return when (platform) {
+            Platform.Android -> this.indexOfFirstOrNull(TITLE_IDENTIFIER_ANDROID)
+            Platform.iOS -> this.indexOfFirstOrNull(TITLE_IDENTIFIER_IOS)
+            Platform.Web -> {
+                this.indexOfFirstOrNull(TITLE_IDENTIFIER_WEB_NEW)
+                    ?: this.indexOfFirstOrNull(TITLE_IDENTIFIER_WEB_OLD)
+            }
+        }
+    }
+
+    private fun List<String?>.getIndexOfCommentColumnOrNull(): Int? {
+        return this.indexOfFirstOrNull(TITLE_IDENTIFIER_COMMENT_EN)
+            ?: this.indexOfFirstOrNull(TITLE_IDENTIFIER_COMMENT_DE)
     }
 
 
@@ -104,17 +122,19 @@ class LocalizationSheetParser {
             }
             .map { worksheet ->
                 val firstLine = worksheet.cells.firstOrNull()
-                    ?: throw IllegalStateException("Worksheet ${worksheet.title} does not contain a header line")
+                    ?: throw IllegalStateException("Worksheet '${worksheet.title}' does not contain a header line")
 
                 val indexOfPlatforms = Platform.values()
-                    .map { platform -> platform to firstLine.indexOfFirstOrNull(platform.identifier) }
+                    .map { platform -> platform to firstLine.getIndexOfPlatformColumnOrNull(platform) }
                     .toMap()
 
                 if (indexOfPlatforms.none { (_, index) -> index != null }) {
                     throw IllegalStateException(
-                        "Worksheet '${worksheet.title}'s first line (a.k.a. the header line) does not contain a column with any of '${Platform.values()
-                            .map { it.identifier }
-                            .joinToString()}'. At least a header for one platform must be present."
+                        "Worksheet '${worksheet.title}'s first line (a.k.a. the header line) does not contain a column with any of " +
+                                "'$TITLE_IDENTIFIER_ANDROID'," +
+                                "'$TITLE_IDENTIFIER_IOS'," +
+                                "'$TITLE_IDENTIFIER_WEB_NEW' (or for legacy reasons also '$TITLE_IDENTIFIER_WEB_OLD'). " +
+                                "At least a header for one platform must be present."
                     )
                 }
 
@@ -127,9 +147,7 @@ class LocalizationSheetParser {
                     }
                     .toMap()
 
-                val indexOfComment =
-                    firstLine.indexOfFirst { it == TITLE_IDENTIFIER_COMMENT }
-                        .let { if (it == -1) null else it }
+                val indexOfComment = firstLine.getIndexOfCommentColumnOrNull()
 
                 ParsedSheet.WorkSheet(
                     title = worksheet.title,
