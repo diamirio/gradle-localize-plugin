@@ -1,10 +1,12 @@
 package com.tailoredapps.gradle.localize.android
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.tailoredapps.gradle.localize.localization.LocalizationSheetParser
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
-class ParsedSheetToAndroidTransformer {
+class ParsedSheetToAndroidTransformer(
+    private val json: Json
+) {
 
     sealed class AndroidValue {
 
@@ -100,10 +102,7 @@ class ParsedSheetToAndroidTransformer {
                 value.startsWith("[\"") && value.endsWith("\"]") -> {
                     AndroidValue.Array(
                         identifier = identifier,
-                        values = Gson().fromJson<List<String>>(
-                            value,
-                            object : TypeToken<List<String>>() {}.type
-                        ),
+                        values = json.decodeFromString<List<String>>(value),
                         comment = entry.comment
                     )
                 }

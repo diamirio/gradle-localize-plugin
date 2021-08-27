@@ -42,7 +42,12 @@ class AndroidStringXmlGenerator {
                         is ParsedSheetToAndroidTransformer.AndroidValue.Plain -> {
                             appendCommentIfPresent(androidValue.comment, addComments = addComments)
                             append("$INDENT<string name=\"${androidValue.identifier}\">")
-                            append(androidValue.value.escapeApostrophes(escapeApostrophes).wrapInCData())
+                            append(
+                                androidValue.value
+                                    .escapeApostrophes(escapeApostrophes)
+                                    .escapeLineBreaks()
+                                    .wrapInCData()
+                            )
                             append("</string>\n")
                         }
                         is ParsedSheetToAndroidTransformer.AndroidValue.Array -> {
@@ -50,7 +55,12 @@ class AndroidStringXmlGenerator {
                             append("$INDENT<string-array name=\"${androidValue.identifier}\">\n")
                             androidValue.values.forEach { value ->
                                 append("$INDENT$INDENT<item>")
-                                append(value.escapeApostrophes(escapeApostrophes).wrapInCData())
+                                append(
+                                    value
+                                        .escapeApostrophes(escapeApostrophes)
+                                        .escapeLineBreaks()
+                                        .wrapInCData()
+                                )
                                 append("</item>\n")
                             }
                             append("$INDENT</string-array>\n")
@@ -60,7 +70,12 @@ class AndroidStringXmlGenerator {
                             append("$INDENT<plurals name=\"${androidValue.identifier}\">\n")
                             androidValue.entries.forEach { (quantity, value) ->
                                 append("$INDENT$INDENT<item quantity=\"$quantity\">")
-                                append(value.escapeApostrophes(escapeApostrophes).wrapInCData())
+                                append(
+                                    value
+                                        .escapeApostrophes(escapeApostrophes)
+                                        .escapeLineBreaks()
+                                        .wrapInCData()
+                                )
                                 append("</item>\n")
                             }
                             append("$INDENT</plurals>\n")
@@ -80,12 +95,14 @@ class AndroidStringXmlGenerator {
     }
 
     private fun String.escapeApostrophes(escapeApostrophes: Boolean): String {
-        return if(escapeApostrophes) {
+        return if (escapeApostrophes) {
             this.replace("'", "\\'")
         } else {
             this
         }
     }
+
+    private fun String.escapeLineBreaks(): String = this.replace("\n", "\\n")
 
     private fun String.wrapInCData(): String = "<![CDATA[$this]]>"
 }
