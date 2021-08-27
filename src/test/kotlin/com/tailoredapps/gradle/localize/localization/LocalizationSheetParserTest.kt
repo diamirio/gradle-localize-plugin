@@ -772,4 +772,93 @@ class LocalizationSheetParserTest {
         }
     }
 
+    @Test
+    fun `parsing real example for previously failing array definitions`() {
+        val sheet = DriveManager.Sheet(
+            id = "some-id",
+            worksheets = listOf(
+                DriveManager.Sheet.WorkSheet(
+                    title = "First Worksheet",
+                    cells = listOf(
+                        listOf(
+                            "Identifier iOS",
+                            "Identifier Android",
+                            "de",
+                            "en",
+                            "Polnisch",
+                            "Kommentar"
+                        ),
+                        listOf("//This is a comment in the worksheet"),
+                        listOf(
+                            null,
+                            "three_item_bullets",
+                            "[\"Das erste item\\n\",\n" +
+                                    "\"Das zweite item\\n\",\n" +
+                                    "\"Das dritte item\"]",
+                            "[\"The first item\\n\",\n" +
+                                    "\"The second item\\n\",\n" +
+                                    "\"The third item\"]",
+                            null,
+                            null
+                        ),
+                        listOf(
+                            null,
+                            "three_item_bullets_2",
+                            "[\"Ein erstes item\\n\\n\",\n" +
+                                    "\"Ein zweites item\\n\",\n" +
+                                    "\"Ein drittes item\"]",
+                            "[\"A first item\\n\\n\",\n" +
+                                    "\"A second item\\n\",\n" +
+                                    "\"A third item\"]",
+                            null,
+                            null
+                        )
+                    )
+                )
+            )
+        )
+        val parsedSheet = localizationSheetParser.parseSheet(
+            sheet = sheet,
+            worksheets = null,
+            languageColumnTitles = listOf("de", "en")
+        )
+
+        parsedSheet.worksheets.size shouldBeEqualTo 1
+        val parsedWorksheet = parsedSheet.worksheets.first()
+        parsedWorksheet.title shouldBeEqualTo "First Worksheet"
+        parsedWorksheet.entries.size shouldBeEqualTo 2
+
+        parsedWorksheet.entries[0].also { entry ->
+            entry.identifier shouldBeEqualTo mapOf(
+                LocalizationSheetParser.Platform.iOS to null,
+                LocalizationSheetParser.Platform.Android to "three_item_bullets"
+            )
+            entry.values shouldBeEqualTo mapOf(
+                "de" to "[\"Das erste item\\n\",\n" +
+                        "\"Das zweite item\\n\",\n" +
+                        "\"Das dritte item\"]",
+                "en" to "[\"The first item\\n\",\n" +
+                        "\"The second item\\n\",\n" +
+                        "\"The third item\"]"
+            )
+            entry.comment.shouldBeNull()
+        }
+
+        parsedWorksheet.entries[1].also { entry ->
+            entry.identifier shouldBeEqualTo mapOf(
+                LocalizationSheetParser.Platform.iOS to null,
+                LocalizationSheetParser.Platform.Android to "three_item_bullets_2"
+            )
+            entry.values shouldBeEqualTo mapOf(
+                "de" to "[\"Ein erstes item\\n\\n\",\n" +
+                        "\"Ein zweites item\\n\",\n" +
+                        "\"Ein drittes item\"]",
+                "en" to "[\"A first item\\n\\n\",\n" +
+                        "\"A second item\\n\",\n" +
+                        "\"A third item\"]"
+            )
+            entry.comment.shouldBeNull()
+        }
+    }
+
 }

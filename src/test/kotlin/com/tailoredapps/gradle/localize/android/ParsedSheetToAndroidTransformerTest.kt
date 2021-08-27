@@ -1,6 +1,7 @@
 package com.tailoredapps.gradle.localize.android
 
 import com.tailoredapps.gradle.localize.localization.LocalizationSheetParser
+import kotlinx.serialization.json.Json
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldThrow
 import org.junit.Before
@@ -13,7 +14,7 @@ internal class ParsedSheetToAndroidTransformerTest {
 
     @Before
     fun setUp() {
-        transformer = ParsedSheetToAndroidTransformer()
+        transformer = ParsedSheetToAndroidTransformer(Json)
     }
 
     @Test
@@ -974,6 +975,70 @@ internal class ParsedSheetToAndroidTransformerTest {
             )
         }.shouldThrow(IllegalArgumentException::class)
 
+    }
+
+    @Test
+    fun `parsed real example for previously failing array definitions`() {
+        val realExampleParsedSheet = LocalizationSheetParser.ParsedSheet(
+            worksheets = listOf(
+                LocalizationSheetParser.ParsedSheet.WorkSheet(
+                    title = "Real World Example Sheet",
+                    entries = listOf(
+                        LocalizationSheetParser.ParsedSheet.LocalizationEntry(
+                            identifier = mapOf(
+                                LocalizationSheetParser.Platform.iOS to null,
+                                LocalizationSheetParser.Platform.Android to "some_bullets_real_example"
+                            ),
+                            values = mapOf(
+                                "de" to "[\"Welche X gehören zu welchem Y\\n\",\n" +
+                                        "\"Welches A gehört zu welcher B\\n\",\n" +
+                                        "\"Hinweise zum Verständnis für die Bearbeitung\"]",
+                                "en" to "[\"Which position on the X belongs to which Y\\n\",\n" +
+                                        "\"Which A belongs to which B\\n\",\n" +
+                                        "\"Any other information to help us clarify the case\"]"
+                            ),
+                            comment = null
+                        )
+                    )
+                )
+            )
+        )
+
+        val valuesDE = transformer.transformForLanguage(
+            language = "de",
+            parsedSheet = realExampleParsedSheet
+        )
+        val expectedDE = listOf(
+            ParsedSheetToAndroidTransformer.AndroidValue.Array(
+                identifier = "some_bullets_real_example",
+                values = listOf(
+                    "Welche X gehören zu welchem Y\n",
+                    "Welches A gehört zu welcher B\n",
+                    "Hinweise zum Verständnis für die Bearbeitung"
+                ),
+                comment = null
+            )
+        )
+
+        valuesDE shouldBeEqualTo expectedDE
+
+        val valuesEN = transformer.transformForLanguage(
+            language = "en",
+            parsedSheet = realExampleParsedSheet
+        )
+        val expectedEN = listOf(
+            ParsedSheetToAndroidTransformer.AndroidValue.Array(
+                identifier = "some_bullets_real_example",
+                values = listOf(
+                    "Which position on the X belongs to which Y\n",
+                    "Which A belongs to which B\n",
+                    "Any other information to help us clarify the case"
+                ),
+                comment = null
+            )
+        )
+
+        valuesEN shouldBeEqualTo expectedEN
     }
 
 }

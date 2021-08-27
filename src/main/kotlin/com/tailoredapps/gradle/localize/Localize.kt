@@ -6,6 +6,7 @@ import com.tailoredapps.gradle.localize.drive.DriveManager
 import com.tailoredapps.gradle.localize.localization.LocalizationSheetParser
 import com.tailoredapps.gradle.localize.util.forEachParallel
 import difflib.DiffUtils
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.IOException
 
@@ -14,7 +15,7 @@ class Localize {
     private val driveManager: DriveManager = DriveManager()
     private val localizationSheetParser: LocalizationSheetParser = LocalizationSheetParser()
     private val androidSheetTransformer: ParsedSheetToAndroidTransformer =
-        ParsedSheetToAndroidTransformer()
+        ParsedSheetToAndroidTransformer(Json)
     private val stringXmlGenerator: AndroidStringXmlGenerator = AndroidStringXmlGenerator()
 
     /**
