@@ -116,10 +116,10 @@ publishing {
 
     repositories {
         maven {
-            url 'https://artifactory.tailored-apps.com/artifactory/gradle-plugin'
+            url 'https://maven.tailored-apps.com/repository/maven-public'
             credentials {
-                username properties.getProperty("artifactory.user")
-                password properties.getProperty("artifactory.apikey")
+                username properties.getProperty("maven.publish.username")
+                password properties.getProperty("maven.publish.password")
             }
         }
     }

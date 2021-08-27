@@ -12,7 +12,7 @@ This is a Gradle port of the fastlane plugin [google_sheet_localize](https://git
 ## Setup
 
 To use the plugin, you need to add the plugin as a classpath dependency to your buildscript (which is usually in your root-level `build.gradle` file).
-Furthermore, you need to add the tailored-apps artifactory as a buildscript repository:
+Furthermore, you need to add the tailored-apps maven repository as a buildscript repository:
 
 ```groovy
 buildscript {
@@ -20,7 +20,7 @@ buildscript {
     repositories {
         // other repositories here
         maven {
-            url 'https://artifactory.tailored-apps.com/artifactory/gradle-plugin/'
+            url 'https://maven.tailored-apps.com/repository/maven-public/'
 
             // Optional, this ensures, that only dependencies of the 'com.tailoredapps.gradle' group are
             // requested from this repository. This ensures, that this repository does not gain any
