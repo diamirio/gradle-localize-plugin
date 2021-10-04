@@ -11,6 +11,11 @@ apply plugin: 'maven-publish'
 group 'com.tailoredapps.gradle'
 version '0.3.2'
 
+// We need to keep compatibility to Java 8 here, as otherwise projects on some machines targeting Java 11 will not be
+// able to load the plugin.
+targetCompatibility = 1.8
+sourceCompatibility = 1.8
+
 def ext_displayName = 'Gradle Localize Plugin'
 def ext_description = 'Gradle Plugin to generate Android string resource files from a localization spreadsheet.'
 def ext_website = 'https://github.com/tailoredmedia/gradle-localize-plugin'
