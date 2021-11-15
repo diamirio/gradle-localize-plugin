@@ -31,5 +31,14 @@ open class BaseLocalizeExtension(
         productConfigContainer.configure(closure)
     }
 
+    /**
+     * Adds a flavor specific config which may overwrite any config of the base config (except [addToCheckTask]).
+     *
+     * @see ProductLocalizeExtension
+     */
+    fun configuration(action: NamedDomainObjectContainer<ProductLocalizeExtension>.() -> Unit) {
+        action.invoke(productConfigContainer)
+    }
+
     internal lateinit var productConfigContainer: NamedDomainObjectContainer<ProductLocalizeExtension>
 }
