@@ -53,6 +53,7 @@ To configure the plugin, it exposes a `localizeConfig` extension.
 This needs to be placed in the same file you applied the plugin (most likely in your app-level `build.gradle` file).
 At least the following configuration must be set, you can find all possible configuration fields further below.
 
+Groovy:
 ```groovy
 localizeConfig {
     serviceAccountCredentialsFile = "./google_drive_credentials.json"  // The location of your service-account credentials file (more about that below)
@@ -60,6 +61,19 @@ localizeConfig {
         main {  // you can define as much configuration sections as you like, within which you can define a source (sheetId) of the localizations as well as a destination. The name of a configuration section can be chosen arbitrarily by you.
             sheetId = "1fwRj1ZFPu2XlrDqkaqmIpJulqR5OVFEZnN35a9v37yc"   // The ID of the spreadsheet which contains the localizations
             languageTitles = ["de", "en"]                              // The column header of the languages you want to import
+        }
+    }
+}
+```
+
+Kotlin Buildscript:
+```kotlin
+localizeConfig {
+    serviceAccountCredentialsFile = "./google_drive_credentials.json"  // The location of your service-account credentials file (more about that below)
+    configuration {
+        create("main") {  // you can define as much configuration sections as you like, within which you can define a source (sheetId) of the localizations as well as a destination. The name of a configuration section can be chosen arbitrarily by you.
+            sheetId = "1fwRj1ZFPu2XlrDqkaqmIpJulqR5OVFEZnN35a9v37yc"   // The ID of the spreadsheet which contains the localizations
+            languageTitles = listOf("de", "en")                        // The column header of the languages you want to import
         }
     }
 }
@@ -73,6 +87,7 @@ To create an additional configuration, just create a lambda named with the name 
 (which is not linked to any product flavors / build types, this can be any name you choose), add the
 [product dependent fields](#product-dependent-configuration) you want to set in the lambda.
 
+Groovy:
 ```groovy
 localizeConfig {
     serviceAccountCredentialsFile = "./google_drive_credentials.json"  // The location of your service-account credentials file (more about that below)
@@ -84,6 +99,26 @@ localizeConfig {
             // the serviceAccountCredentialsFile will be taken from the base config above, as it is not defined here.
         }
         product1 {                                                     // 'product1' is a name you can choose to name this configuration
+            sheetId = "product1SheetIdHere"                            // for the product-configuration 'product1', the given sheetId will be used
+            localizationPath = "./src/flavor1/res"                     // for the product-configuration 'product1', the localizationPath "./src/flavor1/res" will be used
+            serviceAccountCredentialsFile = "./product1/google_drive_credentials.json"  // the serviceAccountCredentialsFile is overwritten here
+        }
+    }
+}
+```
+
+Kotlin Buildscript:
+```kotlin
+localizeConfig {
+    serviceAccountCredentialsFile = "./google_drive_credentials.json"  // The location of your service-account credentials file (more about that below)
+
+    configuration {
+        create("main") {                                               // 'main' is a name you can choose to name this configuration
+            sheetId = "mainSheetIdHere"                                // for the product-configuration 'main', the given sheetId will be used
+            localizationPath = "./src/main/res"                        // for the product-configuration 'main', the localizationPath "./src/main/res" will be used
+            // the serviceAccountCredentialsFile will be taken from the base config above, as it is not defined here.
+        }
+        create("product1") {                                           // 'product1' is a name you can choose to name this configuration
             sheetId = "product1SheetIdHere"                            // for the product-configuration 'product1', the given sheetId will be used
             localizationPath = "./src/flavor1/res"                     // for the product-configuration 'product1', the localizationPath "./src/flavor1/res" will be used
             serviceAccountCredentialsFile = "./product1/google_drive_credentials.json"  // the serviceAccountCredentialsFile is overwritten here
