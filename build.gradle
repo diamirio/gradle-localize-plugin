@@ -1,9 +1,9 @@
 plugins {
-    id 'com.gradle.plugin-publish' version '0.11.0'
+    id 'com.gradle.plugin-publish'
     id 'java-gradle-plugin'
-    id 'org.jetbrains.kotlin.jvm' version '1.5.31'
-    id 'maven'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.5.31'
+    id 'org.jetbrains.kotlin.jvm'
+    id 'maven-publish'
+    id 'org.jetbrains.kotlin.plugin.serialization'
 }
 
 apply plugin: 'maven-publish'
@@ -27,21 +27,21 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31'
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
+    implementation Kotlin.stdlib.jdk8
+    implementation KotlinX.coroutines.core
 
-    implementation 'com.google.api-client:google-api-client:1.23.0'
-    implementation 'com.google.apis:google-api-services-sheets:v4-rev612-1.25.0'
+    implementation libs.google.api.client
+    implementation libs.google.api.services.sheets
 
-    implementation 'com.googlecode.java-diff-utils:diffutils:1.3.0'
+    implementation libs.diffutils
 
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0"
+    implementation KotlinX.serialization.json
 
 
-    testImplementation 'junit:junit:4.13.2'
-    testImplementation "org.amshove.kluent:kluent:1.68"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2"
-    testImplementation "io.mockk:mockk:1.12.0"
+    testImplementation Testing.junit4
+    testImplementation libs.kluent
+    testImplementation KotlinX.coroutines.test
+    testImplementation Testing.mockK
 
 }
 
