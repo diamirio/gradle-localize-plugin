@@ -157,8 +157,28 @@ _([go to the definition in the code](./blob/master/src/main/kotlin/com/tailoreda
 | `escapeApostrophes` (default: `true`)          | `Boolean`      | Whether apostrophes in the spreadsheet should be escaped. |
 
 
+## Sheet
 
+The sheet supports string localizations as well as plurals and string-arrays. For examples / a quick overview, have a look at the example sheet [here](https://docs.google.com/spreadsheets/d/1fwRj1ZFPu2XlrDqkaqmIpJulqR5OVFEZnN35a9v37yc/edit?usp=sharing), especially `simulation.time.hour` and `strings.array.test`.
 
+### String values
+
+For a string value, just insert your value in the corresponding cell
+
+### Plural values
+
+For plural values, enter your values in one cell separated by lines, with the plural indicator starting the line, followed by a `|`, and then the value for that plural, e.g.:
+```
+one|%d hour
+other|%d hours
+```
+
+### String arrays
+
+For string arrays, place your values in a cell in a JSON String-Array format, e.g:
+```
+["first value", "second value", "third value"]
+```
 
 ## Tasks
 
