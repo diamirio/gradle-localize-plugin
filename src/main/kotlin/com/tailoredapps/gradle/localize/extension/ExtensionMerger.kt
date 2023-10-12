@@ -29,7 +29,8 @@ class ExtensionMerger(
             localizationPath = pathToFileManager.pathToFile(localizationPath),
             addToCheckTask = baseConfig.addToCheckTask,
             addComments = productConfig.addComments ?: baseConfig.addComments,
-            escapeApostrophes = productConfig.escapeApostrophes ?: baseConfig.escapeApostrophes
+            escapeApostrophes = productConfig.escapeApostrophes ?: baseConfig.escapeApostrophes,
+            generateEmptyValues = productConfig.generateEmptyValues ?: baseConfig.generateEmptyValues,
         )
     }
 

@@ -43,7 +43,8 @@ class Localize {
             val stringXmlContent = stringXmlGenerator.androidValuesToStringsXml(
                 values = transformedSheet,
                 addComments = config.addComments,
-                escapeApostrophes = config.escapeApostrophes
+                escapeApostrophes = config.escapeApostrophes,
+                generateEmptyValues = config.generateEmptyValues
             )
 
             val file = getStringsXmlFileOrThrow(
@@ -85,7 +86,8 @@ class Localize {
                 val stringXmlContent = stringXmlGenerator.androidValuesToStringsXml(
                     values = transformedSheet,
                     addComments = config.addComments,
-                    escapeApostrophes = config.escapeApostrophes
+                    escapeApostrophes = config.escapeApostrophes,
+                    generateEmptyValues = config.generateEmptyValues
                 )
 
                 val file = getStringsXmlFileOrThrow(

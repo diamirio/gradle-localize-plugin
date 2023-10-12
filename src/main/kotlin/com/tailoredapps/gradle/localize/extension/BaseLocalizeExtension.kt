@@ -13,13 +13,16 @@ import org.gradle.api.NamedDomainObjectContainer
  * @param addComments Whether the comments from the spreadsheet should be added to the strings.xml files (as comments)
  * as well.
  * @param escapeApostrophes Whether apostrophes should be escaped.
+ * @param generateEmptyValues Whether empty [values] should be put into the `strings.xml`. Defaults
+ * to true. Can be useful to allow a fallback to the default language if there is no value in a column.
  */
 open class BaseLocalizeExtension(
     var serviceAccountCredentialsFile: String = "",
     var baseLanguage: String = DEFAULT_BASE_LANGUAGE,
     var addToCheckTask: Boolean = true,
     var addComments: Boolean = true,
-    var escapeApostrophes: Boolean = true
+    var escapeApostrophes: Boolean = true,
+    var generateEmptyValues: Boolean = true
 ) {
 
     /**

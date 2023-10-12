@@ -59,7 +59,8 @@ class ExtensionMergerTest {
             localizationPath = File("/tmp", "./src/main/some-custom-res"),
             addToCheckTask = true,
             addComments = true,
-            escapeApostrophes = true
+            escapeApostrophes = true,
+            generateEmptyValues = true,
         )
     }
 
@@ -93,7 +94,8 @@ class ExtensionMergerTest {
             localizationPath = File("/tmp", "./src/main/some-custom-res"),
             addToCheckTask = true,
             addComments = true,
-            escapeApostrophes = false
+            escapeApostrophes = false,
+            generateEmptyValues = true,
         )
     }
 
@@ -135,7 +137,8 @@ class ExtensionMergerTest {
             localizationPath = File("/tmp", "./src/main/some-custom-res-for-mock"),
             addToCheckTask = true,
             addComments = false,
-            escapeApostrophes = true
+            escapeApostrophes = true,
+            generateEmptyValues = true,
         )
     }
 
