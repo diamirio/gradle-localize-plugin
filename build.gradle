@@ -79,10 +79,17 @@ pluginBundle {
 
 
 Properties properties = new Properties()
+def credentialPropertiesFile = ""
+def injectedCredentialsFilePath = System.getenv('CREDENTIALS_PROPERTIES_FILE')
+if (injectedCredentialsFilePath != null && !injectedCredentialsFilePath.isEmpty()) {
+    credentialPropertiesFile = injectedCredentialsFilePath
+} else {
+    credentialPropertiesFile = 'local.properties'
+}
 try {
-    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    properties.load(project.rootProject.file(credentialPropertiesFile).newDataInputStream())
 } catch (IOException e) {
-    println("local.properties not found. This can be ignored, unless you want to publish. " + e.localizedMessage)
+    println("'${credentialPropertiesFile}' not found. This can be ignored, unless you want to publish. " + e.localizedMessage)
 }
 
 

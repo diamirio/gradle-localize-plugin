@@ -1,0 +1,19 @@
+stages:
+  - test
+  - build
+
+run tests:
+  stage: test
+  script:
+    - ./gradlew clean test
+  tags:
+    - android-java-17
+
+build and publish:
+  stage: build
+  script:
+    - ./gradlew clean build publishLocalizePluginPublicationToMavenRepository
+  tags:
+    - android-java-17
+  only:
+    - tags
