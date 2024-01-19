@@ -65,4 +65,10 @@ open class ProductLocalizeExtension(
      * @see [BaseLocalizeExtension.escapeApostrophes]
      */
     var escapeApostrophes: Boolean? = true
+
+    /**
+     * Whether empty values from the spreadsheet should be put into the `strings.xml`. Defaults
+     * to true. Can be useful to allow a fallback to the default language if there is no value in a column.
+     */
+    var generateEmptyValues: Boolean? = null
 }

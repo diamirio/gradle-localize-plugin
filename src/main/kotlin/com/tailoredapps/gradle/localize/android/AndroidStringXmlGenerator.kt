@@ -19,12 +19,15 @@ class AndroidStringXmlGenerator {
      * @param escapeApostrophes Whether apostrophes in the [values] should be escaped. The default
      * option should be true here, but for legacy reasons when migrating from the fastlane plugin,
      * the apostrophes may already have been escaped in the spreadsheet.
+     * @param generateEmptyValues Whether empty [values] should be put into the `strings.xml`. Defaults
+     * to true. Can be useful to allow a fallback to the default language if there is no value in a column.
      * @return The content for a `strings.xml` file for the given [values].
      */
     suspend fun androidValuesToStringsXml(
         values: List<ParsedSheetToAndroidTransformer.AndroidValue>,
         addComments: Boolean,
-        escapeApostrophes: Boolean = true
+        escapeApostrophes: Boolean = true,
+        generateEmptyValues: Boolean = true,
     ): String {
         return suspendCancellableCoroutine<String> { continuation ->
             val string = StringBuilder().apply {
@@ -36,8 +39,13 @@ class AndroidStringXmlGenerator {
                     }
                     when (androidValue) {
                         is ParsedSheetToAndroidTransformer.AndroidValue.Blank -> {
-                            appendCommentIfPresent(androidValue.comment, addComments = addComments)
-                            append("$INDENT<string name=\"${androidValue.identifier}\"></string>\n")
+                            if(generateEmptyValues) {
+                                appendCommentIfPresent(
+                                    androidValue.comment,
+                                    addComments = addComments
+                                )
+                                append("$INDENT<string name=\"${androidValue.identifier}\"></string>\n")
+                            }
                         }
                         is ParsedSheetToAndroidTransformer.AndroidValue.Plain -> {
                             appendCommentIfPresent(androidValue.comment, addComments = addComments)
