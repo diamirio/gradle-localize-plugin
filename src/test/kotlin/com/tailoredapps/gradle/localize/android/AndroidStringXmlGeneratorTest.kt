@@ -1,7 +1,9 @@
 package com.tailoredapps.gradle.localize.android
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Before
 import org.junit.Test
@@ -18,94 +20,99 @@ internal class AndroidStringXmlGeneratorTest {
     }
 
     @Test
-    fun `real example sheet values generates string xml for german values including comments`() = runBlockingTest {
-        val values = listOf(
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "example.example",
-                value = "Mario hat %1s eine %2s gegessen",
-                comment = "beispiel beispiel"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "TBD",
-                value = "Mario hat %1d eine %2d gegessen",
-                comment = null
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test01",
-                value = "Test01",
-                comment = "Test01 is used because de is the default language"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test02",
-                value = "Bitte drücken Sie \"Fortsetzen\"",
-                comment = null
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test03",
-                value = "Hallo",
-                comment = "Hallo is used because de is the default language"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "continue",
-                value = "Continue test",
-                comment = "Continue is supported as a Variable name "
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "switch",
-                value = "Switch test",
-                comment = "Switch is supported as a Variable name "
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test04", value = "Los geht's", comment = "\"'\"test for Android"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "viewController.purchaseButton.title", value = "upcase, downcase test ", comment = null
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plural(
-                identifier = "simulation.time.hour",
-                entries = listOf("one" to "%d Stunde", "other" to "%d Stunden"),
-                comment = "Plurals example "
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test05",
-                value = "Es ist ein %s",
-                comment = "Always use %s for strings, on iOS its converted to %@"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "TBD",
-                value = "hallo",
-                comment = "Test TBD"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "NR",
-                value = "hallo",
-                comment = "Test NR"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Array(
-                identifier = "strings.array.test",
-                values = listOf("test0", "test1", "test2"),
-                comment = "String array example"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test06",
-                value = "Links oder Rechts doppelklicken, um %d Sekunden zu überspringen",
-                comment = null
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Array(
-                identifier = "strings.array.test1",
-                values = listOf("Message vocal", "Message d'image", "Message d'emplacement"),
-                comment = "Test array with '"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "template2.example.example",
-                value = "Mario hat %1s eine %2s gegessen",
-                comment = "beispiel beispiel"
+    fun `real example sheet values generates string xml for german values including comments`(): Unit =
+        runBlocking {
+            val values = listOf(
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "example.example",
+                    value = "Mario hat %1s eine %2s gegessen",
+                    comment = "beispiel beispiel"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "TBD",
+                    value = "Mario hat %1d eine %2d gegessen",
+                    comment = null
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test01",
+                    value = "Test01",
+                    comment = "Test01 is used because de is the default language"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test02",
+                    value = "Bitte drücken Sie \"Fortsetzen\"",
+                    comment = null
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test03",
+                    value = "Hallo",
+                    comment = "Hallo is used because de is the default language"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "continue",
+                    value = "Continue test",
+                    comment = "Continue is supported as a Variable name "
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "switch",
+                    value = "Switch test",
+                    comment = "Switch is supported as a Variable name "
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test04",
+                    value = "Los geht's",
+                    comment = "\"'\"test for Android"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "viewController.purchaseButton.title",
+                    value = "upcase, downcase test ",
+                    comment = null
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plural(
+                    identifier = "simulation.time.hour",
+                    entries = listOf("one" to "%d Stunde", "other" to "%d Stunden"),
+                    comment = "Plurals example "
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test05",
+                    value = "Es ist ein %s",
+                    comment = "Always use %s for strings, on iOS its converted to %@"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "TBD",
+                    value = "hallo",
+                    comment = "Test TBD"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "NR",
+                    value = "hallo",
+                    comment = "Test NR"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Array(
+                    identifier = "strings.array.test",
+                    values = listOf("test0", "test1", "test2"),
+                    comment = "String array example"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test06",
+                    value = "Links oder Rechts doppelklicken, um %d Sekunden zu überspringen",
+                    comment = null
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Array(
+                    identifier = "strings.array.test1",
+                    values = listOf("Message vocal", "Message d'image", "Message d'emplacement"),
+                    comment = "Test array with '"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "template2.example.example",
+                    value = "Mario hat %1s eine %2s gegessen",
+                    comment = "beispiel beispiel"
+                )
             )
-        )
 
-        val fileContent = generator.androidValuesToStringsXml(values, true)
+            val fileContent = generator.androidValuesToStringsXml(values, true)
 
-        fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
+            fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <!-- beispiel beispiel -->
     <string name="example.example"><![CDATA[Mario hat %1s eine %2s gegessen]]></string>
@@ -150,101 +157,102 @@ internal class AndroidStringXmlGeneratorTest {
     <string name="template2.example.example"><![CDATA[Mario hat %1s eine %2s gegessen]]></string>
 </resources>
 """
-    }
+        }
 
     @Test
-    fun `real example sheet values generates string xml for english values including comments`() = runBlockingTest {
+    fun `real example sheet values generates string xml for english values including comments`(): Unit =
+        runBlocking {
 
-        val values = listOf(
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "example.example",
-                value = "Mario ate a %2s %1s",
-                comment = "beispiel beispiel"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "TBD",
-                value = "Mario ate a %2d %1d",
-                comment = null
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test01",
-                value = "TBD",
-                comment = "Test01 is used because de is the default language"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test02",
-                value = "Please press \"Continue\"",
-                comment = null
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Blank(
-                identifier = "android.test03",
-                comment = "Hallo is used because de is the default language"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "continue",
-                value = "Continue test",
-                comment = "Continue is supported as a Variable name "
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "switch",
-                value = "Switch test",
-                comment = "Switch is supported as a Variable name "
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test04",
-                value = "Los geht's",
-                comment = "\"'\"test for Android"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "viewController.purchaseButton.title",
-                value = "upcase, downcase test ",
-                comment = null
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plural(
-                identifier = "simulation.time.hour",
-                entries = listOf("one" to "%d Hour", "other" to "%d Hours"),
-                comment = "Plurals example "
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test05",
-                value = "It is a %s",
-                comment = "Always use %s for strings, on iOS its converted to %@"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "TBD",
-                value = "hi",
-                comment = "Test TBD"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "NR",
-                value = "hi",
-                comment = "Test NR"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Array(
-                identifier = "strings.array.test",
-                values = listOf("test0", "test1", "test2"),
-                comment = "String array example"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test06",
-                value = "Double-click left or right to skip %d seconds.",
-                comment = null
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Array(
-                identifier = "strings.array.test1",
-                values = listOf("Message vocal", "Message d'image", "Message d'emplacement"),
-                comment = "Test array with '"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "template2.example.example",
-                value = "Mario ate a %2s %1s",
-                comment = "beispiel beispiel"
+            val values = listOf(
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "example.example",
+                    value = "Mario ate a %2s %1s",
+                    comment = "beispiel beispiel"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "TBD",
+                    value = "Mario ate a %2d %1d",
+                    comment = null
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test01",
+                    value = "TBD",
+                    comment = "Test01 is used because de is the default language"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test02",
+                    value = "Please press \"Continue\"",
+                    comment = null
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Blank(
+                    identifier = "android.test03",
+                    comment = "Hallo is used because de is the default language"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "continue",
+                    value = "Continue test",
+                    comment = "Continue is supported as a Variable name "
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "switch",
+                    value = "Switch test",
+                    comment = "Switch is supported as a Variable name "
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test04",
+                    value = "Los geht's",
+                    comment = "\"'\"test for Android"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "viewController.purchaseButton.title",
+                    value = "upcase, downcase test ",
+                    comment = null
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plural(
+                    identifier = "simulation.time.hour",
+                    entries = listOf("one" to "%d Hour", "other" to "%d Hours"),
+                    comment = "Plurals example "
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test05",
+                    value = "It is a %s",
+                    comment = "Always use %s for strings, on iOS its converted to %@"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "TBD",
+                    value = "hi",
+                    comment = "Test TBD"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "NR",
+                    value = "hi",
+                    comment = "Test NR"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Array(
+                    identifier = "strings.array.test",
+                    values = listOf("test0", "test1", "test2"),
+                    comment = "String array example"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test06",
+                    value = "Double-click left or right to skip %d seconds.",
+                    comment = null
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Array(
+                    identifier = "strings.array.test1",
+                    values = listOf("Message vocal", "Message d'image", "Message d'emplacement"),
+                    comment = "Test array with '"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "template2.example.example",
+                    value = "Mario ate a %2s %1s",
+                    comment = "beispiel beispiel"
+                )
             )
-        )
 
-        val fileContent = generator.androidValuesToStringsXml(values, true)
+            val fileContent = generator.androidValuesToStringsXml(values, true)
 
-        fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
+            fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <!-- beispiel beispiel -->
     <string name="example.example"><![CDATA[Mario ate a %2s %1s]]></string>
@@ -289,97 +297,102 @@ internal class AndroidStringXmlGeneratorTest {
     <string name="template2.example.example"><![CDATA[Mario ate a %2s %1s]]></string>
 </resources>
 """
-    }
+        }
 
     @Test
-    fun `real example sheet values generates string xml for german values without comments`() = runBlockingTest {
-        val values = listOf(
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "example.example",
-                value = "Mario hat %1s eine %2s gegessen",
-                comment = "beispiel beispiel"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "TBD",
-                value = "Mario hat %1d eine %2d gegessen",
-                comment = null
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test01",
-                value = "Test01",
-                comment = "Test01 is used because de is the default language"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test02",
-                value = "Bitte drücken Sie \"Fortsetzen\"",
-                comment = null
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test03",
-                value = "Hallo",
-                comment = "Hallo is used because de is the default language"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "continue",
-                value = "Continue test",
-                comment = "Continue is supported as a Variable name "
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "switch",
-                value = "Switch test",
-                comment = "Switch is supported as a Variable name "
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test04", value = "Los geht's", comment = "\"'\"test for Android"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "viewController.purchaseButton.title", value = "upcase, downcase test ", comment = null
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plural(
-                identifier = "simulation.time.hour",
-                entries = listOf("one" to "%d Stunde", "other" to "%d Stunden"),
-                comment = "Plurals example "
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test05",
-                value = "Es ist ein %s",
-                comment = "Always use %s for strings, on iOS its converted to %@"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "TBD",
-                value = "hallo",
-                comment = "Test TBD"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "NR",
-                value = "hallo",
-                comment = "Test NR"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Array(
-                identifier = "strings.array.test",
-                values = listOf("test0", "test1", "test2"),
-                comment = "String array example"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test06",
-                value = "Links oder Rechts doppelklicken, um %d Sekunden zu überspringen",
-                comment = null
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Array(
-                identifier = "strings.array.test1",
-                values = listOf("Message vocal", "Message d'image", "Message d'emplacement"),
-                comment = "Test array with '"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "template2.example.example",
-                value = "Mario hat %1s eine %2s gegessen",
-                comment = "beispiel beispiel"
+    fun `real example sheet values generates string xml for german values without comments`(): Unit =
+        runBlocking {
+            val values = listOf(
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "example.example",
+                    value = "Mario hat %1s eine %2s gegessen",
+                    comment = "beispiel beispiel"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "TBD",
+                    value = "Mario hat %1d eine %2d gegessen",
+                    comment = null
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test01",
+                    value = "Test01",
+                    comment = "Test01 is used because de is the default language"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test02",
+                    value = "Bitte drücken Sie \"Fortsetzen\"",
+                    comment = null
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test03",
+                    value = "Hallo",
+                    comment = "Hallo is used because de is the default language"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "continue",
+                    value = "Continue test",
+                    comment = "Continue is supported as a Variable name "
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "switch",
+                    value = "Switch test",
+                    comment = "Switch is supported as a Variable name "
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test04",
+                    value = "Los geht's",
+                    comment = "\"'\"test for Android"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "viewController.purchaseButton.title",
+                    value = "upcase, downcase test ",
+                    comment = null
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plural(
+                    identifier = "simulation.time.hour",
+                    entries = listOf("one" to "%d Stunde", "other" to "%d Stunden"),
+                    comment = "Plurals example "
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test05",
+                    value = "Es ist ein %s",
+                    comment = "Always use %s for strings, on iOS its converted to %@"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "TBD",
+                    value = "hallo",
+                    comment = "Test TBD"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "NR",
+                    value = "hallo",
+                    comment = "Test NR"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Array(
+                    identifier = "strings.array.test",
+                    values = listOf("test0", "test1", "test2"),
+                    comment = "String array example"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test06",
+                    value = "Links oder Rechts doppelklicken, um %d Sekunden zu überspringen",
+                    comment = null
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Array(
+                    identifier = "strings.array.test1",
+                    values = listOf("Message vocal", "Message d'image", "Message d'emplacement"),
+                    comment = "Test array with '"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "template2.example.example",
+                    value = "Mario hat %1s eine %2s gegessen",
+                    comment = "beispiel beispiel"
+                )
             )
-        )
 
-        val fileContent = generator.androidValuesToStringsXml(values, false)
+            val fileContent = generator.androidValuesToStringsXml(values, false)
 
-        fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
+            fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="example.example"><![CDATA[Mario hat %1s eine %2s gegessen]]></string>
     <string name="TBD"><![CDATA[Mario hat %1d eine %2d gegessen]]></string>
@@ -411,101 +424,102 @@ internal class AndroidStringXmlGeneratorTest {
     <string name="template2.example.example"><![CDATA[Mario hat %1s eine %2s gegessen]]></string>
 </resources>
 """
-    }
+        }
 
     @Test
-    fun `real example sheet values generates string xml for english values without comments`() = runBlockingTest {
+    fun `real example sheet values generates string xml for english values without comments`(): Unit =
+        runBlocking {
 
-        val values = listOf(
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "example.example",
-                value = "Mario ate a %2s %1s",
-                comment = "beispiel beispiel"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "TBD",
-                value = "Mario ate a %2d %1d",
-                comment = null
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test01",
-                value = "TBD",
-                comment = "Test01 is used because de is the default language"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test02",
-                value = "Please press \"Continue\"",
-                comment = null
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Blank(
-                identifier = "android.test03",
-                comment = "Hallo is used because de is the default language"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "continue",
-                value = "Continue test",
-                comment = "Continue is supported as a Variable name "
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "switch",
-                value = "Switch test",
-                comment = "Switch is supported as a Variable name "
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test04",
-                value = "Los geht's",
-                comment = "\"'\"test for Android"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "viewController.purchaseButton.title",
-                value = "upcase, downcase test ",
-                comment = null
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plural(
-                identifier = "simulation.time.hour",
-                entries = listOf("one" to "%d Hour", "other" to "%d Hours"),
-                comment = "Plurals example "
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test05",
-                value = "It is a %s",
-                comment = "Always use %s for strings, on iOS its converted to %@"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "TBD",
-                value = "hi",
-                comment = "Test TBD"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "NR",
-                value = "hi",
-                comment = "Test NR"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Array(
-                identifier = "strings.array.test",
-                values = listOf("test0", "test1", "test2"),
-                comment = "String array example"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "android.test06",
-                value = "Double-click left or right to skip %d seconds.",
-                comment = null
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Array(
-                identifier = "strings.array.test1",
-                values = listOf("Message vocal", "Message d'image", "Message d'emplacement"),
-                comment = "Test array with '"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "template2.example.example",
-                value = "Mario ate a %2s %1s",
-                comment = "beispiel beispiel"
+            val values = listOf(
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "example.example",
+                    value = "Mario ate a %2s %1s",
+                    comment = "beispiel beispiel"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "TBD",
+                    value = "Mario ate a %2d %1d",
+                    comment = null
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test01",
+                    value = "TBD",
+                    comment = "Test01 is used because de is the default language"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test02",
+                    value = "Please press \"Continue\"",
+                    comment = null
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Blank(
+                    identifier = "android.test03",
+                    comment = "Hallo is used because de is the default language"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "continue",
+                    value = "Continue test",
+                    comment = "Continue is supported as a Variable name "
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "switch",
+                    value = "Switch test",
+                    comment = "Switch is supported as a Variable name "
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test04",
+                    value = "Los geht's",
+                    comment = "\"'\"test for Android"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "viewController.purchaseButton.title",
+                    value = "upcase, downcase test ",
+                    comment = null
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plural(
+                    identifier = "simulation.time.hour",
+                    entries = listOf("one" to "%d Hour", "other" to "%d Hours"),
+                    comment = "Plurals example "
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test05",
+                    value = "It is a %s",
+                    comment = "Always use %s for strings, on iOS its converted to %@"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "TBD",
+                    value = "hi",
+                    comment = "Test TBD"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "NR",
+                    value = "hi",
+                    comment = "Test NR"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Array(
+                    identifier = "strings.array.test",
+                    values = listOf("test0", "test1", "test2"),
+                    comment = "String array example"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "android.test06",
+                    value = "Double-click left or right to skip %d seconds.",
+                    comment = null
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Array(
+                    identifier = "strings.array.test1",
+                    values = listOf("Message vocal", "Message d'image", "Message d'emplacement"),
+                    comment = "Test array with '"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "template2.example.example",
+                    value = "Mario ate a %2s %1s",
+                    comment = "beispiel beispiel"
+                )
             )
-        )
 
-        val fileContent = generator.androidValuesToStringsXml(values, false)
+            val fileContent = generator.androidValuesToStringsXml(values, false)
 
-        fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
+            fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="example.example"><![CDATA[Mario ate a %2s %1s]]></string>
     <string name="TBD"><![CDATA[Mario ate a %2d %1d]]></string>
@@ -537,10 +551,10 @@ internal class AndroidStringXmlGeneratorTest {
     <string name="template2.example.example"><![CDATA[Mario ate a %2s %1s]]></string>
 </resources>
 """
-    }
+        }
 
     @Test
-    fun `sheet values with apostrophe and escapeApostrophes enabled`() = runBlockingTest {
+    fun `sheet values with apostrophe and escapeApostrophes enabled`(): Unit = runBlocking {
         val values = listOf(
             ParsedSheetToAndroidTransformer.AndroidValue.Plain(
                 identifier = "example.1",
@@ -588,7 +602,7 @@ internal class AndroidStringXmlGeneratorTest {
     }
 
     @Test
-    fun `sheet values with apostrophe and escapeApostrophes disabled`() = runBlockingTest {
+    fun `sheet values with apostrophe and escapeApostrophes disabled`(): Unit = runBlocking {
         val values = listOf(
             ParsedSheetToAndroidTransformer.AndroidValue.Plain(
                 identifier = "example.1",
@@ -636,7 +650,7 @@ internal class AndroidStringXmlGeneratorTest {
     }
 
     @Test
-    fun `parsed real example for previously failing array definitions`() = runBlockingTest {
+    fun `parsed real example for previously failing array definitions`(): Unit = runBlocking {
         val values = listOf(
             ParsedSheetToAndroidTransformer.AndroidValue.Array(
                 identifier = "some_identifier",
@@ -667,26 +681,27 @@ internal class AndroidStringXmlGeneratorTest {
     }
 
     @Test
-    fun `parsed real example for previously failing array definitions with different line breaks`() = runBlockingTest {
-        val values = listOf(
-            ParsedSheetToAndroidTransformer.AndroidValue.Array(
-                identifier = "some_identifier",
-                values = listOf(
-                    "A first item\n\n\n",
-                    "A second item",
-                    "A third item\n\n"
-                ),
-                comment = null
+    fun `parsed real example for previously failing array definitions with different line breaks`(): Unit =
+        runBlocking {
+            val values = listOf(
+                ParsedSheetToAndroidTransformer.AndroidValue.Array(
+                    identifier = "some_identifier",
+                    values = listOf(
+                        "A first item\n\n\n",
+                        "A second item",
+                        "A third item\n\n"
+                    ),
+                    comment = null
+                )
             )
-        )
 
-        val fileContent = generator.androidValuesToStringsXml(
-            values = values,
-            addComments = false,
-            escapeApostrophes = false
-        )
+            val fileContent = generator.androidValuesToStringsXml(
+                values = values,
+                addComments = false,
+                escapeApostrophes = false
+            )
 
-        fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
+            fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string-array name="some_identifier">
         <item><![CDATA[A first item\n\n\n]]></item>
@@ -695,7 +710,7 @@ internal class AndroidStringXmlGeneratorTest {
     </string-array>
 </resources>
 """
-    }
+        }
 
 
 }
