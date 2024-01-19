@@ -27,7 +27,6 @@ class ExtensionMerger(
             languageTitles = productConfig.languageTitles,
             baseLanguage = productConfig.baseLanguage ?: baseConfig.baseLanguage,
             localizationPath = pathToFileManager.pathToFile(localizationPath),
-            addToCheckTask = baseConfig.addToCheckTask,
             addComments = productConfig.addComments ?: baseConfig.addComments,
             escapeApostrophes = productConfig.escapeApostrophes ?: baseConfig.escapeApostrophes,
             generateEmptyValues = productConfig.generateEmptyValues ?: baseConfig.generateEmptyValues,

@@ -3,7 +3,6 @@
 Gradle Plugin to generate Android string resource files (`string.xml`) from a [Localization Spreadsheet](https://docs.google.com/spreadsheets/d/1fwRj1ZFPu2XlrDqkaqmIpJulqR5OVFEZnN35a9v37yc/edit?usp=sharing).
 
 Once configured, it conveniently imports the string localizations of a given spreadsheet by calling the gradle task `./gradlew localize`.
-It also hooks into the `check` task, which checks whether the localizations are still up-to-date (which can be disabled, see below in the [configuration section](#configuration))
 
 
 This is a Gradle port of the fastlane plugin [google_sheet_localize](https://github.com/tailoredmedia/fastlane-plugin-localize).
@@ -137,7 +136,6 @@ _([go to the definition in the code](./blob/master/src/main/kotlin/com/tailoreda
 |:----------------------------------------|:----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `serviceAccountCredentialsFile`         | `String`  | The local path to the credentials file for the service-account. More about this in [Google Drive Service Account Credentials](#google-drive-service-account-credentials). Optional, if set in the product specific configuration                                                   |
 | `baseLanguage` (default: `en`)          | `String`  | The language (one of the values from `languageTitles`) which should be the default language, which is placed in the `values` folder (so if this is set to `en`, there will be no `values-en` folder created, but the english localizations will be placed in the `values` folder). |
-| `addToCheckTask` (default: `true`)      | `Boolean` | Whether this plugin should add the `checkLocalization` task to the default `check` task.                                                                                                                                                                                           |
 | `addComments` (default: `true`)         | `Boolean` | Whether the comments from the spreadsheet should be added to the strings.xml files (as comments) as well.                                                                                                                                                                          |
 | `escapeApostrophes` (default: `true`)   | `Boolean` | Whether apostrophes in the spreadsheet should be escaped.                                                                                                                                                                                                                          |
 | `generateEmptyValues` (default: `true`) | `Boolean` | Whether empty values should be put into the strings.xml files. Can be useful to allow a fallback to the default language if there is no value in a language column.                                                                                                                |

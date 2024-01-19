@@ -57,7 +57,6 @@ class ExtensionMergerTest {
             languageTitles = listOf("de", "en", "ru"),
             baseLanguage = "ru",
             localizationPath = File("/tmp", "./src/main/some-custom-res"),
-            addToCheckTask = true,
             addComments = true,
             escapeApostrophes = true,
             generateEmptyValues = true,
@@ -92,7 +91,6 @@ class ExtensionMergerTest {
             languageTitles = listOf("de", "en", "ru"),
             baseLanguage = "ru",
             localizationPath = File("/tmp", "./src/main/some-custom-res"),
-            addToCheckTask = true,
             addComments = true,
             escapeApostrophes = false,
             generateEmptyValues = true,
@@ -116,7 +114,6 @@ class ExtensionMergerTest {
         ).apply {
             serviceAccountCredentialsFile = "./some-service-accounts-file.json"
             baseLanguage = "ru"
-            addToCheckTask = true
             addComments = true
             escapeApostrophes = false
         }
@@ -135,7 +132,6 @@ class ExtensionMergerTest {
             languageTitles = listOf("de", "en", "ru", "it"),
             baseLanguage = "it",
             localizationPath = File("/tmp", "./src/main/some-custom-res-for-mock"),
-            addToCheckTask = true,
             addComments = false,
             escapeApostrophes = true,
             generateEmptyValues = true,

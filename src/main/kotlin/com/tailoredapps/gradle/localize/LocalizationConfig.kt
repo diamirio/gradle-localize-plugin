@@ -10,7 +10,6 @@ data class LocalizationConfig(
     val languageTitles: List<String>,
     val baseLanguage: String,
     val localizationPath: File,
-    val addToCheckTask: Boolean,
     val addComments: Boolean,
     val escapeApostrophes: Boolean,
     val generateEmptyValues: Boolean,

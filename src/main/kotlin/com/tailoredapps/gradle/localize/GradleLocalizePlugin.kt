@@ -1,6 +1,10 @@
 package com.tailoredapps.gradle.localize
 
-import com.tailoredapps.gradle.localize.extension.*
+import com.tailoredapps.gradle.localize.extension.BaseLocalizeExtension
+import com.tailoredapps.gradle.localize.extension.ConfigProvider
+import com.tailoredapps.gradle.localize.extension.ConfigVerifier
+import com.tailoredapps.gradle.localize.extension.ExtensionMerger
+import com.tailoredapps.gradle.localize.extension.ProductLocalizeExtension
 import com.tailoredapps.gradle.localize.util.PathToFileManager
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
@@ -45,7 +49,7 @@ class GradleLocalizePlugin : Plugin<Project> {
             group = PLUGIN_TASK_GROUP_NAME
         }
 
-        val checkLocalization = project.tasks.create("checkLocalization") { task ->
+        project.tasks.create("checkLocalization") { task ->
             task.doLast {
                 runTask(project, extension) { config ->
                     localize.check(config)
@@ -54,11 +58,6 @@ class GradleLocalizePlugin : Plugin<Project> {
         }.apply {
             description = "Checks whether the local localizations are up-to-date."
             group = PLUGIN_TASK_GROUP_NAME
-        }
-
-        //add the [checkLocalization] task to the `check` task if not configured otherwise
-        if (extension.addToCheckTask) {
-            project.tasks.getByName("check").dependsOn(checkLocalization)
         }
 
     }

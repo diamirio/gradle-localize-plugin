@@ -9,7 +9,6 @@ import org.gradle.api.NamedDomainObjectContainer
  * @param baseLanguage The language (one of the values from `languageTitles`) which should be the default language, which is placed
  * in the `values` folder (so if this is set to `en`, there will be no `values-en` folder created, but the english
  * localizations will be placed in the `values` folder).
- * @param addToCheckTask Whether this plugin should add the `checkLocalization` task to the default `check` task.
  * @param addComments Whether the comments from the spreadsheet should be added to the strings.xml files (as comments)
  * as well.
  * @param escapeApostrophes Whether apostrophes should be escaped.
@@ -19,14 +18,13 @@ import org.gradle.api.NamedDomainObjectContainer
 open class BaseLocalizeExtension(
     var serviceAccountCredentialsFile: String = "",
     var baseLanguage: String = DEFAULT_BASE_LANGUAGE,
-    var addToCheckTask: Boolean = true,
     var addComments: Boolean = true,
     var escapeApostrophes: Boolean = true,
     var generateEmptyValues: Boolean = true
 ) {
 
     /**
-     * Adds a flavor specific config which may overwrite any config of the base config (except [addToCheckTask]).
+     * Adds a flavor specific config which may overwrite any config of the base config.
      *
      * @see ProductLocalizeExtension
      */
@@ -35,7 +33,7 @@ open class BaseLocalizeExtension(
     }
 
     /**
-     * Adds a flavor specific config which may overwrite any config of the base config (except [addToCheckTask]).
+     * Adds a flavor specific config which may overwrite any config of the base config.
      *
      * @see ProductLocalizeExtension
      */
