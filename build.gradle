@@ -98,7 +98,6 @@ publishing {
     publications {
         localizePlugin(MavenPublication) {
             from components.java
-            artifact sourceJar
             pom {
                 name = ext_displayName
                 description = ext_description
