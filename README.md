@@ -31,7 +31,7 @@ buildscript {
 
     dependencies {
         // other classpath dependencies here
-        classpath 'com.tailoredapps.gradle:localize:0.3.4'
+        classpath 'com.tailoredapps.gradle:localize:0.4.0'
     }
 }
 ```

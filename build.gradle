@@ -9,7 +9,7 @@ plugins {
 apply plugin: 'maven-publish'
 
 group 'com.tailoredapps.gradle'
-version '0.3.4'
+version '0.4.0'
 
 // We need to keep compatibility to Java 8 here, as otherwise projects on some machines targeting Java 11 will not be
 // able to load the plugin.
