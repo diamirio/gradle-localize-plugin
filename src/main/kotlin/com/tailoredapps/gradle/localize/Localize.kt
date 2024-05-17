@@ -9,6 +9,7 @@ import difflib.DiffUtils
 import java.io.File
 import java.io.IOException
 import kotlinx.serialization.json.Json
+import org.jetbrains.annotations.VisibleForTesting
 
 class Localize {
     private val driveManager: DriveManager = DriveManager()
@@ -18,11 +19,12 @@ class Localize {
     private val stringXmlGenerator: AndroidStringXmlGenerator = AndroidStringXmlGenerator()
 
     /**
-     * Fetches the localizations according to the given [config] and saves them into the files
-     * given in the [config].
+     * Fetches the localizations according to the given [config], checks if keys are unique and
+     * saves them into the files given in the [config].
      * This will write the files according to the [config] with the fetched localization strings.
      * @param config the configuration
      */
+    @Throws(IllegalStateException::class)
     suspend fun localize(config: LocalizationConfig) {
         val sheet =
             driveManager.getSheet(
@@ -35,6 +37,8 @@ class Localize {
                 worksheets = config.worksheets,
                 languageColumnTitles = config.languageTitles
             )
+
+        parsedSheet.abortLocalizationOnKeyDuplicates()
 
         config.languageTitles.forEachParallel { language ->
             val transformedSheet =
@@ -163,6 +167,20 @@ class Localize {
                         "Could not create file ${file.absolutePath}. The location of this file was defined as 'localizationPath' to save the strings.xml files in."
                     )
                 }
+            }
+        }
+    }
+
+    @VisibleForTesting
+    internal fun LocalizationSheetParser.ParsedSheet.abortLocalizationOnKeyDuplicates() {
+        worksheets.forEachParallel { worksheet ->
+            val duplicates = worksheet.entries
+                .mapNotNull { it.identifier[LocalizationSheetParser.Platform.Android] }
+                .groupBy { it }
+                .filter { it.value.size > 1 }
+
+            if (duplicates.isNotEmpty()) {
+                throw IllegalStateException("Duplicates found for the following key(s): ${duplicates.keys.joinToString(", ") { "\"$it\"" }}. Localization update aborted!")
             }
         }
     }
