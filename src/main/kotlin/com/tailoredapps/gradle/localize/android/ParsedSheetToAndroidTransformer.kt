@@ -6,9 +6,7 @@ import kotlinx.serialization.json.Json
 class ParsedSheetToAndroidTransformer(
     private val json: Json
 ) {
-
     sealed class AndroidValue {
-
         abstract val identifier: String
         abstract val comment: String?
 
@@ -34,7 +32,6 @@ class ParsedSheetToAndroidTransformer(
             override val identifier: String,
             override val comment: String?
         ) : AndroidValue()
-
     }
 
     private companion object {
@@ -50,10 +47,7 @@ class ParsedSheetToAndroidTransformer(
      * @param parsedSheet The parsed localization sheet to extract the [AndroidValue]s from.
      * @return a [List] of [AndroidValue]s which contain all translations for the given [language].
      */
-    fun transformForLanguage(
-        language: String,
-        parsedSheet: LocalizationSheetParser.ParsedSheet
-    ): List<AndroidValue> {
+    fun transformForLanguage(language: String, parsedSheet: LocalizationSheetParser.ParsedSheet): List<AndroidValue> {
         return parsedSheet.worksheets.flatMap { worksheet ->
             worksheet.entries
                 .asSequence()
@@ -68,11 +62,7 @@ class ParsedSheetToAndroidTransformer(
             .any { line -> quantityPrefixes.any { prefix -> line.startsWith(prefix) } }
     }
 
-
-    private fun parseToAndroidValue(
-        entry: LocalizationSheetParser.ParsedSheet.LocalizationEntry,
-        language: String
-    ): AndroidValue {
+    private fun parseToAndroidValue(entry: LocalizationSheetParser.ParsedSheet.LocalizationEntry, language: String): AndroidValue {
         val identifier =
             requireNotNull(entry.identifier[LocalizationSheetParser.Platform.Android]) {
                 "entry.identifier[${LocalizationSheetParser.Platform.Android}]"
@@ -80,18 +70,21 @@ class ParsedSheetToAndroidTransformer(
         val value = entry.values[language]
         return if (value != null) {
             when {
-                //check whether plural:
+                // check whether plural:
                 value.isPluralDefinition() -> {
                     AndroidValue.Plural(
                         identifier = identifier,
-                        entries = value.split("\n")
+                        entries =
+                        value.split("\n")
                             .mapNotNull { pluralLine ->
                                 pluralLine.split("|", limit = 2)
                                     .takeIf { it.size == 2 }
                             }
                             .map { (quantity, value) ->
                                 if (quantity !in quantityKeywords) {
-                                    throw IllegalArgumentException("Invalid plural quantity keyword detected for $identifier: $quantity. Valid quantity keywords are: $quantityKeywords")
+                                    throw IllegalArgumentException(
+                                        "Invalid plural quantity keyword detected for $identifier: $quantity. Valid quantity keywords are: $quantityKeywords"
+                                    )
                                 }
                                 quantity to value
                             },
@@ -99,7 +92,7 @@ class ParsedSheetToAndroidTransformer(
                     )
                 }
 
-                //check whether array:
+                // check whether array:
                 value.startsWith("[\"") && value.endsWith("\"]") -> {
                     AndroidValue.Array(
                         identifier = identifier,
@@ -123,5 +116,4 @@ class ParsedSheetToAndroidTransformer(
             )
         }
     }
-
 }

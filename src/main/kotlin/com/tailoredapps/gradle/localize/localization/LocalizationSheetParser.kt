@@ -8,7 +8,6 @@ import com.tailoredapps.gradle.localize.localization.LocalizationSheetParser.Par
  * localization values.
  */
 class LocalizationSheetParser {
-
     /**
      * Represents a parsed sheet (similarly to a [DriveManager.Sheet], but parsed for localizations)
      *
@@ -17,7 +16,6 @@ class LocalizationSheetParser {
     data class ParsedSheet(
         val worksheets: List<WorkSheet>
     ) {
-
         /**
          * Represents a parsed worksheet (similarly to [DriveManager.Sheet.WorkSheet], but parsed for localizations)
          *
@@ -92,7 +90,6 @@ class LocalizationSheetParser {
             ?: this.indexOfFirstOrNull(TITLE_IDENTIFIER_COMMENT_DE)
     }
 
-
     /**
      * Parses the given [sheet] for localizations.
      *
@@ -108,84 +105,88 @@ class LocalizationSheetParser {
      * for all languages & identifiers, but the values may be null if they are not set in the
      * worksheet.
      */
-    fun parseSheet(
-        sheet: DriveManager.Sheet,
-        worksheets: List<String>?,
-        languageColumnTitles: List<String>
-    ): ParsedSheet {
-        val parsedWorksheets = sheet.worksheets
-            .let { allWorksheets ->
-                if (worksheets != null) {
-                    allWorksheets.filter { worksheets.contains(it.title) }
-                } else {
-                    allWorksheets
+    fun parseSheet(sheet: DriveManager.Sheet, worksheets: List<String>?, languageColumnTitles: List<String>): ParsedSheet {
+        val parsedWorksheets =
+            sheet.worksheets
+                .let { allWorksheets ->
+                    if (worksheets != null) {
+                        allWorksheets.filter { worksheets.contains(it.title) }
+                    } else {
+                        allWorksheets
+                    }
                 }
-            }
-            .map { worksheet ->
-                val firstLine = worksheet.cells.firstOrNull()
-                    ?: throw IllegalStateException("Worksheet '${worksheet.title}' does not contain a header line")
+                .map { worksheet ->
+                    val firstLine =
+                        worksheet.cells.firstOrNull()
+                            ?: throw IllegalStateException("Worksheet '${worksheet.title}' does not contain a header line")
 
-                val indexOfPlatforms = Platform.entries.associateWith { platform ->
-                    firstLine.getIndexOfPlatformColumnOrNull(platform)
-                }
+                    val indexOfPlatforms =
+                        Platform.entries.associateWith { platform ->
+                            firstLine.getIndexOfPlatformColumnOrNull(platform)
+                        }
 
-                if (indexOfPlatforms.none { (_, index) -> index != null }) {
-                    throw IllegalStateException(
-                        "Worksheet '${worksheet.title}'s first line (a.k.a. the header line) does not contain a column with any of " +
+                    if (indexOfPlatforms.none { (_, index) -> index != null }) {
+                        throw IllegalStateException(
+                            "Worksheet '${worksheet.title}'s first line (a.k.a. the header line) does not contain a column with any of " +
                                 "'$TITLE_IDENTIFIER_ANDROID'," +
                                 "'$TITLE_IDENTIFIER_IOS'," +
                                 "'$TITLE_IDENTIFIER_WEB_NEW' (or for legacy reasons also '$TITLE_IDENTIFIER_WEB_OLD'). " +
                                 "At least a header for one platform must be present."
-                    )
-                }
+                        )
+                    }
 
-                val indexOfLanguages = languageColumnTitles.associateWith { languageIdentifier ->
-                    firstLine.indexOfFirstOrThrow(
-                        worksheet.title,
-                        languageIdentifier
-                    )
-                }
-
-                val indexOfComment = firstLine.getIndexOfCommentColumnOrNull()
-
-                ParsedSheet.WorkSheet(
-                    title = worksheet.title,
-                    entries = worksheet.cells
-                        .asSequence()
-                        .drop(1)
-                        .filter { it.size > 1 }
-                        .map { row ->
-                            ParsedSheet.LocalizationEntry(
-                                identifier = Platform.entries
-                                    .mapNotNull { platform ->
-                                        indexOfPlatforms[platform]?.let { index ->
-                                            platform to row.getOrNull(index)
-                                        }
-                                    }
-                                    .toMap(),
-                                values = indexOfLanguages
-                                    .map { (languageIdentifier, columnIndex) ->
-                                        languageIdentifier to row.getOrNull(columnIndex)
-                                    }
-                                    .toMap(),
-                                comment = indexOfComment?.let { index -> row.getOrNull(index) }
+                    val indexOfLanguages =
+                        languageColumnTitles.associateWith { languageIdentifier ->
+                            firstLine.indexOfFirstOrThrow(
+                                worksheet.title,
+                                languageIdentifier
                             )
                         }
-                        .filter { it.identifier.any { (_, identifier) -> identifier != null } }
-                        .toList()
-                )
-            }
+
+                    val indexOfComment = firstLine.getIndexOfCommentColumnOrNull()
+
+                    ParsedSheet.WorkSheet(
+                        title = worksheet.title,
+                        entries =
+                        worksheet.cells
+                            .asSequence()
+                            .drop(1)
+                            .filter { it.size > 1 }
+                            .map { row ->
+                                ParsedSheet.LocalizationEntry(
+                                    identifier =
+                                    Platform.entries
+                                        .mapNotNull { platform ->
+                                            indexOfPlatforms[platform]?.let { index ->
+                                                platform to row.getOrNull(index)
+                                            }
+                                        }
+                                        .toMap(),
+                                    values =
+                                    indexOfLanguages
+                                        .map { (languageIdentifier, columnIndex) ->
+                                            languageIdentifier to row.getOrNull(columnIndex)
+                                        }
+                                        .toMap(),
+                                    comment = indexOfComment?.let { index -> row.getOrNull(index) }
+                                )
+                            }
+                            .filter { it.identifier.any { (_, identifier) -> identifier != null } }
+                            .toList()
+                    )
+                }
 
         return ParsedSheet(
             worksheets = parsedWorksheets
         )
     }
 
-
     private fun List<String?>.indexOfFirstOrThrow(worksheetTitle: String, identifier: String): Int {
         val index = this.indexOfFirst { it == identifier }
         if (index == -1) {
-            throw IllegalStateException("worksheet $worksheetTitle first line (a.k.a. the header line) does not contain a column with '$identifier'")
+            throw IllegalStateException(
+                "worksheet $worksheetTitle first line (a.k.a. the header line) does not contain a column with '$identifier'"
+            )
         }
         return index
     }
@@ -198,5 +199,4 @@ class LocalizationSheetParser {
             index
         }
     }
-
 }

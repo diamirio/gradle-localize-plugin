@@ -22,7 +22,6 @@ open class BaseLocalizeExtension(
     var escapeApostrophes: Boolean = true,
     var generateEmptyValues: Boolean = true
 ) {
-
     /**
      * Adds a flavor specific config which may overwrite any config of the base config.
      *

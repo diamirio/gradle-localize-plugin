@@ -1,15 +1,21 @@
 package com.tailoredapps.gradle.localize.extension
 
 import com.tailoredapps.gradle.localize.LocalizationConfig
-import io.mockk.*
+import io.mockk.MockKAnnotations
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
-import org.amshove.kluent.*
+import io.mockk.mockk
+import io.mockk.verify
+import io.mockk.verifyOrder
+import org.amshove.kluent.`should be equal to`
+import org.amshove.kluent.shouldBe
+import org.amshove.kluent.shouldBeEmpty
+import org.amshove.kluent.shouldNotBeEmpty
+import org.amshove.kluent.shouldNotBeNull
 import org.junit.Before
 import org.junit.Test
 
-
 class ConfigProviderTest {
-
     private lateinit var configProvider: ConfigProvider
 
     @MockK
@@ -24,11 +30,13 @@ class ConfigProviderTest {
 
     @Test
     fun `getProductAwareConfigs for empty list of product configs`() {
-        val baseConfig: BaseLocalizeExtension = mockk(relaxed = true) {
-            productConfigContainer = mockk {
-                every { asMap } returns sortedMapOf<String, ProductLocalizeExtension>()
+        val baseConfig: BaseLocalizeExtension =
+            mockk(relaxed = true) {
+                productConfigContainer =
+                    mockk {
+                        every { asMap } returns sortedMapOf<String, ProductLocalizeExtension>()
+                    }
             }
-        }
 
         val result = configProvider.getProductAwareConfigs(baseConfig = baseConfig)
 
@@ -40,12 +48,14 @@ class ConfigProviderTest {
     @Test
     fun `getProductAwareConfigs for list of one product config`() {
         val firstProductLocalizeExtension: ProductLocalizeExtension = mockk(relaxed = true)
-        val baseConfig: BaseLocalizeExtension = mockk(relaxed = true) {
-            productConfigContainer = mockk()
-        }
-        every { baseConfig.productConfigContainer.asMap } returns sortedMapOf<String, ProductLocalizeExtension>(
-            "firstProduct" to firstProductLocalizeExtension
-        )
+        val baseConfig: BaseLocalizeExtension =
+            mockk(relaxed = true) {
+                productConfigContainer = mockk()
+            }
+        every { baseConfig.productConfigContainer.asMap } returns
+            sortedMapOf<String, ProductLocalizeExtension>(
+                "firstProduct" to firstProductLocalizeExtension
+            )
 
         val firstMergedConfig: LocalizationConfig = mockk()
         every { extensionMerger.merge(any(), any(), any()) } returns firstMergedConfig
@@ -69,13 +79,15 @@ class ConfigProviderTest {
     fun `getProductAwareConfigs for list of two product config`() {
         val firstProductLocalizeExtension: ProductLocalizeExtension = mockk(relaxed = true)
         val secondProductLocalizeExtension: ProductLocalizeExtension = mockk(relaxed = true)
-        val baseConfig: BaseLocalizeExtension = mockk(relaxed = true) {
-            productConfigContainer = mockk()
-        }
-        every { baseConfig.productConfigContainer.asMap } returns sortedMapOf<String, ProductLocalizeExtension>(
-            "firstProduct" to firstProductLocalizeExtension,
-            "secondProduct" to secondProductLocalizeExtension
-        )
+        val baseConfig: BaseLocalizeExtension =
+            mockk(relaxed = true) {
+                productConfigContainer = mockk()
+            }
+        every { baseConfig.productConfigContainer.asMap } returns
+            sortedMapOf<String, ProductLocalizeExtension>(
+                "firstProduct" to firstProductLocalizeExtension,
+                "secondProduct" to secondProductLocalizeExtension
+            )
 
         val firstMergedConfig: LocalizationConfig = mockk()
         val secondMergedConfig: LocalizationConfig = mockk()
@@ -102,5 +114,4 @@ class ConfigProviderTest {
             )
         }
     }
-
 }

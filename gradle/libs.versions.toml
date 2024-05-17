@@ -7,6 +7,7 @@ gradle-plugin-publish = "1.2.1"
 junit = "4.13.2"
 kluent = "1.73"
 kotlin = "1.9.22"
+kotlinter = "4.3.0"
 kotlinx-coroutines = "1.8.1"
 kotlinx-serialization-json = "1.6.2"
 mockk = "1.13.11"
@@ -29,3 +30,4 @@ benmanes-versions = { id = "com.github.ben-manes.versions", version.ref = "benma
 gradle-plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }

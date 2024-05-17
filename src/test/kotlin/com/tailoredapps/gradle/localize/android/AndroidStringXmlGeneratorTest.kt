@@ -6,10 +6,8 @@ import org.amshove.kluent.shouldBeEqualTo
 import org.junit.Before
 import org.junit.Test
 
-
 @ExperimentalCoroutinesApi
 internal class AndroidStringXmlGeneratorTest {
-
     private lateinit var generator: AndroidStringXmlGenerator
 
     @Before
@@ -18,9 +16,9 @@ internal class AndroidStringXmlGeneratorTest {
     }
 
     @Test
-    fun `real example sheet values generates string xml for german values including comments`(): Unit =
-        runBlocking {
-            val values = listOf(
+    fun `real example sheet values generates string xml for german values including comments`(): Unit = runBlocking {
+        val values =
+            listOf(
                 ParsedSheetToAndroidTransformer.AndroidValue.Plain(
                     identifier = "example.example",
                     value = "Mario hat %1s eine %2s gegessen",
@@ -108,9 +106,9 @@ internal class AndroidStringXmlGeneratorTest {
                 )
             )
 
-            val fileContent = generator.androidValuesToStringsXml(values, true)
+        val fileContent = generator.androidValuesToStringsXml(values, true)
 
-            fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
+        fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <!-- beispiel beispiel -->
     <string name="example.example"><![CDATA[Mario hat %1s eine %2s gegessen]]></string>
@@ -155,13 +153,12 @@ internal class AndroidStringXmlGeneratorTest {
     <string name="template2.example.example"><![CDATA[Mario hat %1s eine %2s gegessen]]></string>
 </resources>
 """
-        }
+    }
 
     @Test
-    fun `real example sheet values generates string xml for english values including comments`(): Unit =
-        runBlocking {
-
-            val values = listOf(
+    fun `real example sheet values generates string xml for english values including comments`(): Unit = runBlocking {
+        val values =
+            listOf(
                 ParsedSheetToAndroidTransformer.AndroidValue.Plain(
                     identifier = "example.example",
                     value = "Mario ate a %2s %1s",
@@ -248,9 +245,9 @@ internal class AndroidStringXmlGeneratorTest {
                 )
             )
 
-            val fileContent = generator.androidValuesToStringsXml(values, true)
+        val fileContent = generator.androidValuesToStringsXml(values, true)
 
-            fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
+        fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <!-- beispiel beispiel -->
     <string name="example.example"><![CDATA[Mario ate a %2s %1s]]></string>
@@ -295,12 +292,12 @@ internal class AndroidStringXmlGeneratorTest {
     <string name="template2.example.example"><![CDATA[Mario ate a %2s %1s]]></string>
 </resources>
 """
-        }
+    }
 
     @Test
-    fun `real example sheet values generates string xml for german values without comments`(): Unit =
-        runBlocking {
-            val values = listOf(
+    fun `real example sheet values generates string xml for german values without comments`(): Unit = runBlocking {
+        val values =
+            listOf(
                 ParsedSheetToAndroidTransformer.AndroidValue.Plain(
                     identifier = "example.example",
                     value = "Mario hat %1s eine %2s gegessen",
@@ -388,9 +385,9 @@ internal class AndroidStringXmlGeneratorTest {
                 )
             )
 
-            val fileContent = generator.androidValuesToStringsXml(values, false)
+        val fileContent = generator.androidValuesToStringsXml(values, false)
 
-            fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
+        fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="example.example"><![CDATA[Mario hat %1s eine %2s gegessen]]></string>
     <string name="TBD"><![CDATA[Mario hat %1d eine %2d gegessen]]></string>
@@ -422,13 +419,12 @@ internal class AndroidStringXmlGeneratorTest {
     <string name="template2.example.example"><![CDATA[Mario hat %1s eine %2s gegessen]]></string>
 </resources>
 """
-        }
+    }
 
     @Test
-    fun `real example sheet values generates string xml for english values without comments`(): Unit =
-        runBlocking {
-
-            val values = listOf(
+    fun `real example sheet values generates string xml for english values without comments`(): Unit = runBlocking {
+        val values =
+            listOf(
                 ParsedSheetToAndroidTransformer.AndroidValue.Plain(
                     identifier = "example.example",
                     value = "Mario ate a %2s %1s",
@@ -515,9 +511,9 @@ internal class AndroidStringXmlGeneratorTest {
                 )
             )
 
-            val fileContent = generator.androidValuesToStringsXml(values, false)
+        val fileContent = generator.androidValuesToStringsXml(values, false)
 
-            fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
+        fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string name="example.example"><![CDATA[Mario ate a %2s %1s]]></string>
     <string name="TBD"><![CDATA[Mario ate a %2d %1d]]></string>
@@ -549,38 +545,40 @@ internal class AndroidStringXmlGeneratorTest {
     <string name="template2.example.example"><![CDATA[Mario ate a %2s %1s]]></string>
 </resources>
 """
-        }
+    }
 
     @Test
     fun `sheet values with apostrophe and escapeApostrophes enabled`(): Unit = runBlocking {
-        val values = listOf(
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "example.1",
-                value = "This is a sample's text",
-                comment = "sample comment"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "example.2",
-                value = "This is a sample\\'s text",
-                comment = null
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Array(
-                identifier = "strings.array.test",
-                values = listOf("test0", "test1", "test2"),
-                comment = "String array example"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plural(
-                identifier = "strings.array.test",
-                entries = listOf("one" to "example's", "other" to "example\\'s"),
-                comment = "String array example"
+        val values =
+            listOf(
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "example.1",
+                    value = "This is a sample's text",
+                    comment = "sample comment"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "example.2",
+                    value = "This is a sample\\'s text",
+                    comment = null
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Array(
+                    identifier = "strings.array.test",
+                    values = listOf("test0", "test1", "test2"),
+                    comment = "String array example"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plural(
+                    identifier = "strings.array.test",
+                    entries = listOf("one" to "example's", "other" to "example\\'s"),
+                    comment = "String array example"
+                )
             )
-        )
 
-        val fileContent = generator.androidValuesToStringsXml(
-            values = values,
-            addComments = false,
-            escapeApostrophes = true
-        )
+        val fileContent =
+            generator.androidValuesToStringsXml(
+                values = values,
+                addComments = false,
+                escapeApostrophes = true
+            )
 
         fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
 <resources>
@@ -601,34 +599,36 @@ internal class AndroidStringXmlGeneratorTest {
 
     @Test
     fun `sheet values with apostrophe and escapeApostrophes disabled`(): Unit = runBlocking {
-        val values = listOf(
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "example.1",
-                value = "This is a sample's text",
-                comment = "sample comment"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plain(
-                identifier = "example.2",
-                value = "This is a sample\\'s text",
-                comment = null
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Array(
-                identifier = "strings.array.test",
-                values = listOf("test0", "test1", "test2"),
-                comment = "String array example"
-            ),
-            ParsedSheetToAndroidTransformer.AndroidValue.Plural(
-                identifier = "strings.array.test",
-                entries = listOf("one" to "example's", "other" to "example\\'s"),
-                comment = "String array example"
+        val values =
+            listOf(
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "example.1",
+                    value = "This is a sample's text",
+                    comment = "sample comment"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plain(
+                    identifier = "example.2",
+                    value = "This is a sample\\'s text",
+                    comment = null
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Array(
+                    identifier = "strings.array.test",
+                    values = listOf("test0", "test1", "test2"),
+                    comment = "String array example"
+                ),
+                ParsedSheetToAndroidTransformer.AndroidValue.Plural(
+                    identifier = "strings.array.test",
+                    entries = listOf("one" to "example's", "other" to "example\\'s"),
+                    comment = "String array example"
+                )
             )
-        )
 
-        val fileContent = generator.androidValuesToStringsXml(
-            values = values,
-            addComments = false,
-            escapeApostrophes = false
-        )
+        val fileContent =
+            generator.androidValuesToStringsXml(
+                values = values,
+                addComments = false,
+                escapeApostrophes = false
+            )
 
         fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
 <resources>
@@ -649,23 +649,26 @@ internal class AndroidStringXmlGeneratorTest {
 
     @Test
     fun `parsed real example for previously failing array definitions`(): Unit = runBlocking {
-        val values = listOf(
-            ParsedSheetToAndroidTransformer.AndroidValue.Array(
-                identifier = "some_identifier",
-                values = listOf(
-                    "A first item\n",
-                    "A second item with two line breaks\n\n",
-                    "A third item with no line breaks"
-                ),
-                comment = null
+        val values =
+            listOf(
+                ParsedSheetToAndroidTransformer.AndroidValue.Array(
+                    identifier = "some_identifier",
+                    values =
+                    listOf(
+                        "A first item\n",
+                        "A second item with two line breaks\n\n",
+                        "A third item with no line breaks"
+                    ),
+                    comment = null
+                )
             )
-        )
 
-        val fileContent = generator.androidValuesToStringsXml(
-            values = values,
-            addComments = false,
-            escapeApostrophes = false
-        )
+        val fileContent =
+            generator.androidValuesToStringsXml(
+                values = values,
+                addComments = false,
+                escapeApostrophes = false
+            )
 
         fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
 <resources>
@@ -679,12 +682,13 @@ internal class AndroidStringXmlGeneratorTest {
     }
 
     @Test
-    fun `parsed real example for previously failing array definitions with different line breaks`(): Unit =
-        runBlocking {
-            val values = listOf(
+    fun `parsed real example for previously failing array definitions with different line breaks`(): Unit = runBlocking {
+        val values =
+            listOf(
                 ParsedSheetToAndroidTransformer.AndroidValue.Array(
                     identifier = "some_identifier",
-                    values = listOf(
+                    values =
+                    listOf(
                         "A first item\n\n\n",
                         "A second item",
                         "A third item\n\n"
@@ -693,13 +697,14 @@ internal class AndroidStringXmlGeneratorTest {
                 )
             )
 
-            val fileContent = generator.androidValuesToStringsXml(
+        val fileContent =
+            generator.androidValuesToStringsXml(
                 values = values,
                 addComments = false,
                 escapeApostrophes = false
             )
 
-            fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
+        fileContent shouldBeEqualTo """<?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <string-array name="some_identifier">
         <item><![CDATA[A first item\n\n\n]]></item>
@@ -708,7 +713,5 @@ internal class AndroidStringXmlGeneratorTest {
     </string-array>
 </resources>
 """
-        }
-
-
+    }
 }
