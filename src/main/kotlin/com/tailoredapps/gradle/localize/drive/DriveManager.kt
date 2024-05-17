@@ -11,15 +11,14 @@ import com.google.api.services.sheets.v4.model.Spreadsheet
 import com.google.auth.http.HttpCredentialsAdapter
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.auth.oauth2.ServiceAccountCredentials
-import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.suspendCancellableCoroutine
 
 class DriveManager {
-
     /**
      * Represents a spreadsheet document
      * @param id The id of the sheet
@@ -29,7 +28,6 @@ class DriveManager {
         val id: String,
         val worksheets: List<WorkSheet>
     ) {
-
         /**
          * Represents a Worksheet (which is a "sub-sheet" within a sheet)
          *
@@ -69,24 +67,27 @@ class DriveManager {
     private suspend fun Sheets.getSpreadsheetResponse(sheetId: String): Spreadsheet {
         return suspendCancellableCoroutine { continuation ->
             try {
-                val response = this.spreadsheets()
-                    .get(sheetId)
-                    .setIncludeGridData(true)
-                    .execute()
+                val response =
+                    this.spreadsheets()
+                        .get(sheetId)
+                        .setIncludeGridData(true)
+                        .execute()
                 continuation.resume(response)
             } catch (throwable: Throwable) {
-                val exception = if (throwable is GoogleJsonResponseException) {
-                    when (throwable.details.code) {
-                        404 -> SpreadsheetNotFoundException(sheetId, throwable)
-                        403 -> AccessForbiddenException(sheetId, throwable)
-                        else -> RuntimeException(
-                            "Error loading spreadsheet with id $sheetId",
-                            throwable
-                        )
+                val exception =
+                    if (throwable is GoogleJsonResponseException) {
+                        when (throwable.details.code) {
+                            404 -> SpreadsheetNotFoundException(sheetId, throwable)
+                            403 -> AccessForbiddenException(sheetId, throwable)
+                            else ->
+                                RuntimeException(
+                                    "Error loading spreadsheet with id $sheetId",
+                                    throwable
+                                )
+                        }
+                    } else {
+                        RuntimeException("Error loading spreadsheet with id $sheetId", throwable)
                     }
-                } else {
-                    RuntimeException("Error loading spreadsheet with id $sheetId", throwable)
-                }
                 continuation.resumeWithException(exception)
             }
         }
@@ -107,9 +108,10 @@ class DriveManager {
     suspend fun getSheet(serviceAccountCredentialsFile: File, sheetId: String): Sheet {
         val credentialsAdapter = HttpCredentialsAdapter(getCredentials(serviceAccountCredentialsFile))
 
-        val sheetsApi = Sheets.Builder(transport, jsonFactory, credentialsAdapter)
-            .setApplicationName("gradle localize")
-            .build()
+        val sheetsApi =
+            Sheets.Builder(transport, jsonFactory, credentialsAdapter)
+                .setApplicationName("gradle localize")
+                .build()
 
         val response = sheetsApi.getSpreadsheetResponse(sheetId)
 
@@ -121,26 +123,28 @@ class DriveManager {
             val sheets = response.sheets
             val spreadsheetId = response.spreadsheetId
 
-            val worksheets = sheets.map { sheet ->
-                val sheetTitle = sheet.properties.title
+            val worksheets =
+                sheets.map { sheet ->
+                    val sheetTitle = sheet.properties.title
 
-                val cells = sheet.data.first().rowData.mapNotNull { row ->
-                    row.values.firstOrNull().let { cells ->
-                        if (cells != null) {
-                            val cellsAsListOfCellData = cells as? List<CellData>
-                            cellsAsListOfCellData?.map { it.effectiveValue?.stringValue }
-                                ?: emptyList()
-                        } else {
-                            emptyList()
+                    val cells =
+                        sheet.data.first().rowData.mapNotNull { row ->
+                            row.values.firstOrNull().let { cells ->
+                                if (cells != null) {
+                                    val cellsAsListOfCellData = cells as? List<CellData>
+                                    cellsAsListOfCellData?.map { it.effectiveValue?.stringValue }
+                                        ?: emptyList()
+                                } else {
+                                    emptyList()
+                                }
+                            }
                         }
-                    }
-                }
 
-                Sheet.WorkSheet(
-                    title = sheetTitle,
-                    cells = cells
-                )
-            }
+                    Sheet.WorkSheet(
+                        title = sheetTitle,
+                        cells = cells
+                    )
+                }
 
             return Sheet(
                 id = spreadsheetId,
@@ -155,7 +159,7 @@ class DriveManager {
     class SpreadsheetNotFoundException(sheetId: String, cause: Throwable? = null) :
         RuntimeException(
             "Spreadsheet '$sheetId' not found. Please make sure that the sheetId is correct. " +
-                    "It may also be that the sheet needs to be shared with a public link once for the plugin to be able to access the sheet.",
+                "It may also be that the sheet needs to be shared with a public link once for the plugin to be able to access the sheet.",
             cause
         )
 
@@ -164,8 +168,7 @@ class DriveManager {
      */
     class AccessForbiddenException(sheetId: String, cause: Throwable? = null) : RuntimeException(
         "Access to Spreadsheet '$sheetId' is forbidden. Please make sure that the sheetId is correct, and the given service account (the given credentials file) has access to it. " +
-                "It may also be that the sheet needs to be shared with a public link once for the plugin to be able to access the sheet.",
+            "It may also be that the sheet needs to be shared with a public link once for the plugin to be able to access the sheet.",
         cause
     )
-
 }

@@ -6,15 +6,13 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import java.io.File
 import org.amshove.kluent.shouldBeEqualTo
 import org.amshove.kluent.shouldNotBeNull
 import org.junit.Before
 import org.junit.Test
-import java.io.File
-
 
 class ExtensionMergerTest {
-
     private lateinit var extensionMerger: ExtensionMerger
 
     @MockK
@@ -29,122 +27,129 @@ class ExtensionMergerTest {
         extensionMerger = ExtensionMerger(pathToFileManager)
     }
 
-
     @Test
     fun `empty base config with one flavor config`() {
-        val productConfig = ProductLocalizeExtension("mock").apply {
-            serviceAccountCredentialsFile = "./some-service-accounts-file.json"
-            sheetId = "ASDF1234!"
-            languageTitles = mutableListOf("de", "en", "ru")
-            baseLanguage = "ru"
-            localizationPath = "./src/main/some-custom-res"
-            addComments = true
-        }
+        val productConfig =
+            ProductLocalizeExtension("mock").apply {
+                serviceAccountCredentialsFile = "./some-service-accounts-file.json"
+                sheetId = "ASDF1234!"
+                languageTitles = mutableListOf("de", "en", "ru")
+                baseLanguage = "ru"
+                localizationPath = "./src/main/some-custom-res"
+                addComments = true
+            }
         val baseConfig = prepareBaseLocalizeExtension(listOf(productConfig))
 
-        val configForMock = extensionMerger.merge(
-            baseConfig = baseConfig,
-            productConfigName = "mock",
-            productConfig = productConfig
-        )
+        val configForMock =
+            extensionMerger.merge(
+                baseConfig = baseConfig,
+                productConfigName = "mock",
+                productConfig = productConfig
+            )
 
         configForMock.shouldNotBeNull()
-        configForMock shouldBeEqualTo LocalizationConfig(
-            productName = "mock",
-            serviceAccountCredentialsFile = File("/tmp/./some-service-accounts-file.json"),
-            sheetId = "ASDF1234!",
-            worksheets = null,
-            languageTitles = listOf("de", "en", "ru"),
-            baseLanguage = "ru",
-            localizationPath = File("/tmp", "./src/main/some-custom-res"),
-            addComments = true,
-            escapeApostrophes = true,
-            generateEmptyValues = true,
-        )
+        configForMock shouldBeEqualTo
+            LocalizationConfig(
+                productName = "mock",
+                serviceAccountCredentialsFile = File("/tmp/./some-service-accounts-file.json"),
+                sheetId = "ASDF1234!",
+                worksheets = null,
+                languageTitles = listOf("de", "en", "ru"),
+                baseLanguage = "ru",
+                localizationPath = File("/tmp", "./src/main/some-custom-res"),
+                addComments = true,
+                escapeApostrophes = true,
+                generateEmptyValues = true
+            )
     }
 
     @Test
     fun `empty base config with one flavor config with escape apostrophes disabled`() {
-        val productConfig = ProductLocalizeExtension("mock").apply {
-            serviceAccountCredentialsFile = "./some-service-accounts-file.json"
-            sheetId = "ASDF1234!"
-            languageTitles = mutableListOf("de", "en", "ru")
-            baseLanguage = "ru"
-            localizationPath = "./src/main/some-custom-res"
-            addComments = true
-            escapeApostrophes = false
-        }
+        val productConfig =
+            ProductLocalizeExtension("mock").apply {
+                serviceAccountCredentialsFile = "./some-service-accounts-file.json"
+                sheetId = "ASDF1234!"
+                languageTitles = mutableListOf("de", "en", "ru")
+                baseLanguage = "ru"
+                localizationPath = "./src/main/some-custom-res"
+                addComments = true
+                escapeApostrophes = false
+            }
         val baseConfig = prepareBaseLocalizeExtension(listOf(productConfig))
 
-        val configForMock = extensionMerger.merge(
-            baseConfig = baseConfig,
-            productConfigName = "mock",
-            productConfig = productConfig
-        )
+        val configForMock =
+            extensionMerger.merge(
+                baseConfig = baseConfig,
+                productConfigName = "mock",
+                productConfig = productConfig
+            )
 
         configForMock.shouldNotBeNull()
-        configForMock shouldBeEqualTo LocalizationConfig(
-            productName = "mock",
-            serviceAccountCredentialsFile = File("/tmp/./some-service-accounts-file.json"),
-            sheetId = "ASDF1234!",
-            worksheets = null,
-            languageTitles = listOf("de", "en", "ru"),
-            baseLanguage = "ru",
-            localizationPath = File("/tmp", "./src/main/some-custom-res"),
-            addComments = true,
-            escapeApostrophes = false,
-            generateEmptyValues = true,
-        )
+        configForMock shouldBeEqualTo
+            LocalizationConfig(
+                productName = "mock",
+                serviceAccountCredentialsFile = File("/tmp/./some-service-accounts-file.json"),
+                sheetId = "ASDF1234!",
+                worksheets = null,
+                languageTitles = listOf("de", "en", "ru"),
+                baseLanguage = "ru",
+                localizationPath = File("/tmp", "./src/main/some-custom-res"),
+                addComments = true,
+                escapeApostrophes = false,
+                generateEmptyValues = true
+            )
     }
 
     @Test
     fun `base config only with flavor overwriting all possible fields`() {
-        val mockProductFlavor = ProductLocalizeExtension("someProductName").apply {
-            serviceAccountCredentialsFile = "./some-service-accounts-file-for-mock.json"
-            sheetId = "SHEET_FOR_MOCK"
-            worksheets = mutableListOf("firstTab", "secondTab", "thirdTab")
-            languageTitles = mutableListOf("de", "en", "ru", "it")
-            baseLanguage = "it"
-            localizationPath = "./src/main/some-custom-res-for-mock"
-            addComments = false
-            escapeApostrophes = true
-        }
-        val baseConfig = prepareBaseLocalizeExtension(
-            listOf(mockProductFlavor)
-        ).apply {
-            serviceAccountCredentialsFile = "./some-service-accounts-file.json"
-            baseLanguage = "ru"
-            addComments = true
-            escapeApostrophes = false
-        }
-        val configForMock = extensionMerger.merge(
-            baseConfig = baseConfig,
-            productConfigName = "someProductName",
-            productConfig = mockProductFlavor
-        )
+        val mockProductFlavor =
+            ProductLocalizeExtension("someProductName").apply {
+                serviceAccountCredentialsFile = "./some-service-accounts-file-for-mock.json"
+                sheetId = "SHEET_FOR_MOCK"
+                worksheets = mutableListOf("firstTab", "secondTab", "thirdTab")
+                languageTitles = mutableListOf("de", "en", "ru", "it")
+                baseLanguage = "it"
+                localizationPath = "./src/main/some-custom-res-for-mock"
+                addComments = false
+                escapeApostrophes = true
+            }
+        val baseConfig =
+            prepareBaseLocalizeExtension(
+                listOf(mockProductFlavor)
+            ).apply {
+                serviceAccountCredentialsFile = "./some-service-accounts-file.json"
+                baseLanguage = "ru"
+                addComments = true
+                escapeApostrophes = false
+            }
+        val configForMock =
+            extensionMerger.merge(
+                baseConfig = baseConfig,
+                productConfigName = "someProductName",
+                productConfig = mockProductFlavor
+            )
 
         configForMock.shouldNotBeNull()
-        configForMock shouldBeEqualTo LocalizationConfig(
-            productName = "someProductName",
-            serviceAccountCredentialsFile = File("/tmp/./some-service-accounts-file-for-mock.json"),
-            sheetId = "SHEET_FOR_MOCK",
-            worksheets = listOf("firstTab", "secondTab", "thirdTab"),
-            languageTitles = listOf("de", "en", "ru", "it"),
-            baseLanguage = "it",
-            localizationPath = File("/tmp", "./src/main/some-custom-res-for-mock"),
-            addComments = false,
-            escapeApostrophes = true,
-            generateEmptyValues = true,
-        )
+        configForMock shouldBeEqualTo
+            LocalizationConfig(
+                productName = "someProductName",
+                serviceAccountCredentialsFile = File("/tmp/./some-service-accounts-file-for-mock.json"),
+                sheetId = "SHEET_FOR_MOCK",
+                worksheets = listOf("firstTab", "secondTab", "thirdTab"),
+                languageTitles = listOf("de", "en", "ru", "it"),
+                baseLanguage = "it",
+                localizationPath = File("/tmp", "./src/main/some-custom-res-for-mock"),
+                addComments = false,
+                escapeApostrophes = true,
+                generateEmptyValues = true
+            )
     }
 
-
-    private fun prepareBaseLocalizeExtension(productExtensions: List<ProductLocalizeExtension> = emptyList()) =
-        BaseLocalizeExtension().apply {
-            productConfigContainer = mockk()
-            every { productConfigContainer.isEmpty() } returns productExtensions.isEmpty()
-            every { productConfigContainer.asMap } returns productExtensions.associateBy { it.name }
+    private fun prepareBaseLocalizeExtension(productExtensions: List<ProductLocalizeExtension> = emptyList()) = BaseLocalizeExtension().apply {
+        productConfigContainer = mockk()
+        every { productConfigContainer.isEmpty() } returns productExtensions.isEmpty()
+        every { productConfigContainer.asMap } returns
+            productExtensions.associateBy { it.name }
                 .toSortedMap()
-        }
-
+    }
 }

@@ -17,9 +17,9 @@ internal const val DEFAULT_BASE_LANGUAGE = "en"
 
 internal const val PLUGIN_TASK_GROUP_NAME = "localization"
 
-//created using this tutorial: https://dzone.com/articles/the-complete-custom-gradle-plugin-building-tutoria
+// created using this tutorial: https://dzone.com/articles/the-complete-custom-gradle-plugin-building-tutoria
+@Suppress("unused")
 class GradleLocalizePlugin : Plugin<Project> {
-
     private val localize: Localize by lazy { Localize() }
     private lateinit var extensionMerger: ExtensionMerger
     private lateinit var pathToFileManager: PathToFileManager
@@ -32,10 +32,11 @@ class GradleLocalizePlugin : Plugin<Project> {
         configProvider = ConfigProvider(extensionMerger = extensionMerger)
         configVerifier = ConfigVerifier()
 
-        val extension = project.extensions.create(
-            PLUGIN_CONFIGURATION_EXTENSION_NAME,
-            BaseLocalizeExtension::class.java
-        )
+        val extension =
+            project.extensions.create(
+                PLUGIN_CONFIGURATION_EXTENSION_NAME,
+                BaseLocalizeExtension::class.java
+            )
         extension.productConfigContainer = project.container(ProductLocalizeExtension::class.java)
 
         project.tasks.create("localize") { task ->
@@ -59,14 +60,9 @@ class GradleLocalizePlugin : Plugin<Project> {
             description = "Checks whether the local localizations are up-to-date."
             group = PLUGIN_TASK_GROUP_NAME
         }
-
     }
 
-    private fun runTask(
-        project: Project,
-        baseConfig: BaseLocalizeExtension,
-        taskToRun: suspend (config: LocalizationConfig) -> Unit
-    ) {
+    private fun runTask(project: Project, baseConfig: BaseLocalizeExtension, taskToRun: suspend (config: LocalizationConfig) -> Unit) {
         val configs = configProvider.getProductAwareConfigs(baseConfig)
 
         runBlocking {
@@ -80,5 +76,4 @@ class GradleLocalizePlugin : Plugin<Project> {
                 .forEach { it.await() }
         }
     }
-
 }

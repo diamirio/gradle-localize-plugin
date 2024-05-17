@@ -6,12 +6,12 @@ import com.tailoredapps.gradle.localize.drive.DriveManager
 import com.tailoredapps.gradle.localize.localization.LocalizationSheetParser
 import com.tailoredapps.gradle.localize.util.forEachParallel
 import difflib.DiffUtils
-import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.IOException
+import kotlinx.serialization.json.Json
+import org.jetbrains.annotations.VisibleForTesting
 
 class Localize {
-
     private val driveManager: DriveManager = DriveManager()
     private val localizationSheetParser: LocalizationSheetParser = LocalizationSheetParser()
     private val androidSheetTransformer: ParsedSheetToAndroidTransformer =
@@ -19,38 +19,46 @@ class Localize {
     private val stringXmlGenerator: AndroidStringXmlGenerator = AndroidStringXmlGenerator()
 
     /**
-     * Fetches the localizations according to the given [config] and saves them into the files
-     * given in the [config].
+     * Fetches the localizations according to the given [config], checks if keys are unique and
+     * saves them into the files given in the [config].
      * This will write the files according to the [config] with the fetched localization strings.
      * @param config the configuration
      */
+    @Throws(IllegalStateException::class)
     suspend fun localize(config: LocalizationConfig) {
-        val sheet = driveManager.getSheet(
-            serviceAccountCredentialsFile = config.serviceAccountCredentialsFile,
-            sheetId = config.sheetId
-        )
-        val parsedSheet = localizationSheetParser.parseSheet(
-            sheet = sheet,
-            worksheets = config.worksheets,
-            languageColumnTitles = config.languageTitles
-        )
+        val sheet =
+            driveManager.getSheet(
+                serviceAccountCredentialsFile = config.serviceAccountCredentialsFile,
+                sheetId = config.sheetId
+            )
+        val parsedSheet =
+            localizationSheetParser.parseSheet(
+                sheet = sheet,
+                worksheets = config.worksheets,
+                languageColumnTitles = config.languageTitles
+            )
+
+        parsedSheet.abortLocalizationOnKeyDuplicates()
 
         config.languageTitles.forEachParallel { language ->
-            val transformedSheet = androidSheetTransformer.transformForLanguage(
-                language = language,
-                parsedSheet = parsedSheet
-            )
-            val stringXmlContent = stringXmlGenerator.androidValuesToStringsXml(
-                values = transformedSheet,
-                addComments = config.addComments,
-                escapeApostrophes = config.escapeApostrophes,
-                generateEmptyValues = config.generateEmptyValues
-            )
+            val transformedSheet =
+                androidSheetTransformer.transformForLanguage(
+                    language = language,
+                    parsedSheet = parsedSheet
+                )
+            val stringXmlContent =
+                stringXmlGenerator.androidValuesToStringsXml(
+                    values = transformedSheet,
+                    addComments = config.addComments,
+                    escapeApostrophes = config.escapeApostrophes,
+                    generateEmptyValues = config.generateEmptyValues
+                )
 
-            val file = getStringsXmlFileOrThrow(
-                localizationPath = config.localizationPath,
-                localizationIdentifier = if (language == config.baseLanguage) null else language
-            )
+            val file =
+                getStringsXmlFileOrThrow(
+                    localizationPath = config.localizationPath,
+                    localizationIdentifier = if (language == config.baseLanguage) null else language
+                )
             file.writeText(stringXmlContent)
         }
     }
@@ -65,44 +73,48 @@ class Localize {
      * @throws RuntimeException
      */
     suspend fun check(config: LocalizationConfig) {
-        val sheet = driveManager.getSheet(
-            serviceAccountCredentialsFile = config.serviceAccountCredentialsFile,
-            sheetId = config.sheetId
-        )
-        val parsedSheet = localizationSheetParser.parseSheet(
-            sheet = sheet,
-            worksheets = config.worksheets,
-            languageColumnTitles = config.languageTitles
-        )
+        val sheet =
+            driveManager.getSheet(
+                serviceAccountCredentialsFile = config.serviceAccountCredentialsFile,
+                sheetId = config.sheetId
+            )
+        val parsedSheet =
+            localizationSheetParser.parseSheet(
+                sheet = sheet,
+                worksheets = config.worksheets,
+                languageColumnTitles = config.languageTitles
+            )
 
         val diffs = mutableListOf<String>()
 
         config.languageTitles
             .map { language ->
-                val transformedSheet = androidSheetTransformer.transformForLanguage(
-                    language = language,
-                    parsedSheet = parsedSheet
-                )
-                val stringXmlContent = stringXmlGenerator.androidValuesToStringsXml(
-                    values = transformedSheet,
-                    addComments = config.addComments,
-                    escapeApostrophes = config.escapeApostrophes,
-                    generateEmptyValues = config.generateEmptyValues
-                )
+                val transformedSheet =
+                    androidSheetTransformer.transformForLanguage(
+                        language = language,
+                        parsedSheet = parsedSheet
+                    )
+                val stringXmlContent =
+                    stringXmlGenerator.androidValuesToStringsXml(
+                        values = transformedSheet,
+                        addComments = config.addComments,
+                        escapeApostrophes = config.escapeApostrophes,
+                        generateEmptyValues = config.generateEmptyValues
+                    )
 
-                val file = getStringsXmlFileOrThrow(
-                    localizationPath = config.localizationPath,
-                    localizationIdentifier = if (language == config.baseLanguage) null else language
-                )
+                val file =
+                    getStringsXmlFileOrThrow(
+                        localizationPath = config.localizationPath,
+                        localizationIdentifier = if (language == config.baseLanguage) null else language
+                    )
 
-
-                val diffResult = compareFiles(
-                    expectedFileName = config.localizationPath.canonicalPath + " (remote)",
-                    expectedFileContent = stringXmlContent,
-                    actualFileName = config.localizationPath.canonicalPath + " (local)",
-                    actualFileContent = file.readText()
-                )
-
+                val diffResult =
+                    compareFiles(
+                        expectedFileName = config.localizationPath.canonicalPath + " (remote)",
+                        expectedFileContent = stringXmlContent,
+                        actualFileName = config.localizationPath.canonicalPath + " (local)",
+                        actualFileContent = file.readText()
+                    )
 
                 if (diffResult != null) {
                     diffs.add(diffResult)
@@ -111,25 +123,22 @@ class Localize {
 
         if (diffs.isNotEmpty()) {
             throw RuntimeException(
-                "Localizations are not up-to-date.\n\n${diffs.joinToString(
-                    separator = "\n"
-                )}"
+                "Localizations are not up-to-date.\n\n${
+                    diffs.joinToString(
+                        separator = "\n"
+                    )
+                }"
             )
         }
     }
 
-
-    private fun compareFiles(
-        expectedFileName: String,
-        expectedFileContent: String,
-        actualFileName: String,
-        actualFileContent: String
-    ): String? {
+    private fun compareFiles(expectedFileName: String, expectedFileContent: String, actualFileName: String, actualFileContent: String): String? {
         // We don't compare full text because newlines on Windows & Linux/macOS are different
         val checkLines = expectedFileContent.lines()
         val actualLines = actualFileContent.lines()
-        if (checkLines == actualLines)
+        if (checkLines == actualLines) {
             return null
+        }
 
         val patch = DiffUtils.diff(checkLines, actualLines)
         val diff =
@@ -137,28 +146,42 @@ class Localize {
         return diff.joinToString("\n")
     }
 
-    private fun getStringsXmlFileOrThrow(
-        localizationPath: File,
-        localizationIdentifier: String?
-    ): File {
-        val valuesDirectory = File(
-            localizationPath,
-            if (localizationIdentifier == null) "values" else "values-$localizationIdentifier"
-        ).also { directory ->
-            if (directory.exists().not()) {
-                if (directory.mkdirs().not()) {
-                    throw IOException("Could not create directory (or parent directories for) ${directory.absolutePath}. This directory was defined as 'localizationPath' to save the strings.xml files in.")
+    private fun getStringsXmlFileOrThrow(localizationPath: File, localizationIdentifier: String?): File {
+        val valuesDirectory =
+            File(
+                localizationPath,
+                if (localizationIdentifier == null) "values" else "values-$localizationIdentifier"
+            ).also { directory ->
+                if (directory.exists().not()) {
+                    if (directory.mkdirs().not()) {
+                        throw IOException(
+                            "Could not create directory (or parent directories for) ${directory.absolutePath}. This directory was defined as 'localizationPath' to save the strings.xml files in."
+                        )
+                    }
                 }
             }
-        }
         return File(valuesDirectory, "strings.xml").also { file ->
             if (file.exists().not()) {
                 if (file.createNewFile().not()) {
-                    throw IOException("Could not create file ${file.absolutePath}. The location of this file was defined as 'localizationPath' to save the strings.xml files in.")
+                    throw IOException(
+                        "Could not create file ${file.absolutePath}. The location of this file was defined as 'localizationPath' to save the strings.xml files in."
+                    )
                 }
             }
         }
     }
 
+    @VisibleForTesting
+    internal fun LocalizationSheetParser.ParsedSheet.abortLocalizationOnKeyDuplicates() {
+        worksheets.forEachParallel { worksheet ->
+            val duplicates = worksheet.entries
+                .mapNotNull { it.identifier[LocalizationSheetParser.Platform.Android] }
+                .groupBy { it }
+                .filter { it.value.size > 1 }
 
+            if (duplicates.isNotEmpty()) {
+                throw IllegalStateException("Sheet \"${worksheet.title}\" has duplicate key(s): ${duplicates.keys.joinToString(", ") { "\"$it\"" }}. Localization update aborted!")
+            }
+        }
+    }
 }
