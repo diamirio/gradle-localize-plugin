@@ -1,14 +1,16 @@
 package com.tailoredapps.gradle.localize.drive
 
 import com.google.api.client.auth.oauth2.Credential
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
-import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.sheets.v4.Sheets
 import com.google.api.services.sheets.v4.SheetsScopes
 import com.google.api.services.sheets.v4.model.CellData
 import com.google.api.services.sheets.v4.model.Spreadsheet
+import com.google.auth.http.HttpCredentialsAdapter
+import com.google.auth.oauth2.GoogleCredentials
+import com.google.auth.oauth2.ServiceAccountCredentials
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
 import java.io.FileInputStream
@@ -41,7 +43,7 @@ class DriveManager {
     }
 
     private val transport = GoogleNetHttpTransport.newTrustedTransport()
-    private val jsonFactory = JacksonFactory.getDefaultInstance()
+    private val jsonFactory = GsonFactory.getDefaultInstance()
 
     /**
      * Returns a [Credential] object from the given [serviceAccountCredentialsFile] which can be used by [Sheets] API
@@ -51,8 +53,8 @@ class DriveManager {
      * should be used as authorization.
      * @return a [Credential] object to be used at the [Sheets.Builder] class.
      */
-    private fun getCredentials(serviceAccountCredentialsFile: File): Credential {
-        return GoogleCredential
+    private fun getCredentials(serviceAccountCredentialsFile: File): GoogleCredentials {
+        return ServiceAccountCredentials
             .fromStream(FileInputStream(serviceAccountCredentialsFile) as InputStream)
             .createScoped(listOf(SheetsScopes.SPREADSHEETS_READONLY))
     }
@@ -77,7 +79,10 @@ class DriveManager {
                     when (throwable.details.code) {
                         404 -> SpreadsheetNotFoundException(sheetId, throwable)
                         403 -> AccessForbiddenException(sheetId, throwable)
-                        else -> RuntimeException("Error loading spreadsheet with id $sheetId", throwable)
+                        else -> RuntimeException(
+                            "Error loading spreadsheet with id $sheetId",
+                            throwable
+                        )
                     }
                 } else {
                     RuntimeException("Error loading spreadsheet with id $sheetId", throwable)
@@ -100,9 +105,9 @@ class DriveManager {
      * @throws RuntimeException On any other error
      */
     suspend fun getSheet(serviceAccountCredentialsFile: File, sheetId: String): Sheet {
-        val credentials = getCredentials(serviceAccountCredentialsFile)
+        val credentialsAdapter = HttpCredentialsAdapter(getCredentials(serviceAccountCredentialsFile))
 
-        val sheetsApi = Sheets.Builder(transport, jsonFactory, credentials)
+        val sheetsApi = Sheets.Builder(transport, jsonFactory, credentialsAdapter)
             .setApplicationName("gradle localize")
             .build()
 
@@ -123,7 +128,8 @@ class DriveManager {
                     row.values.firstOrNull().let { cells ->
                         if (cells != null) {
                             val cellsAsListOfCellData = cells as? List<CellData>
-                            cellsAsListOfCellData?.map { it.effectiveValue?.stringValue } ?: emptyList()
+                            cellsAsListOfCellData?.map { it.effectiveValue?.stringValue }
+                                ?: emptyList()
                         } else {
                             emptyList()
                         }
@@ -146,11 +152,12 @@ class DriveManager {
     /**
      * Indicates that the spreadsheet for the given sheetId has not been found.
      */
-    class SpreadsheetNotFoundException(sheetId: String, cause: Throwable? = null) : RuntimeException(
-        "Spreadsheet '$sheetId' not found. Please make sure that the sheetId is correct. " +
-                "It may also be that the sheet needs to be shared with a public link once for the plugin to be able to access the sheet.",
-        cause
-    )
+    class SpreadsheetNotFoundException(sheetId: String, cause: Throwable? = null) :
+        RuntimeException(
+            "Spreadsheet '$sheetId' not found. Please make sure that the sheetId is correct. " +
+                    "It may also be that the sheet needs to be shared with a public link once for the plugin to be able to access the sheet.",
+            cause
+        )
 
     /**
      * Indicates that the access to the spreadsheet for the given sheetId has been denied (Error: Forbidden).

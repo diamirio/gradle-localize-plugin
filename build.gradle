@@ -1,9 +1,10 @@
 plugins {
-    id 'com.gradle.plugin-publish'
-    id 'java-gradle-plugin'
-    id 'org.jetbrains.kotlin.jvm'
-    id 'maven-publish'
-    id 'org.jetbrains.kotlin.plugin.serialization'
+    id("java-gradle-plugin")
+    id("maven-publish")
+    alias(libs.plugins.gradle.plugin.publish)
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.benmanes.versions)
 }
 
 apply plugin: 'maven-publish'
@@ -27,22 +28,17 @@ repositories {
 }
 
 dependencies {
-    implementation Kotlin.stdlib.jdk8
-    implementation KotlinX.coroutines.core
-
-    implementation libs.google.api.client
-    implementation libs.google.api.services.sheets
-
     implementation libs.diffutils
+    implementation libs.google.api.client
+    implementation libs.google.sheets
+    implementation libs.kotlinx.coroutines.jdk8
+    implementation libs.kotlinx.coroutines.core
+    implementation libs.kotlinx.serialization.json
 
-    implementation KotlinX.serialization.json
-
-
-    testImplementation Testing.junit4
+    testImplementation libs.junit
     testImplementation libs.kluent
-    testImplementation KotlinX.coroutines.test
-    testImplementation Testing.mockK
-
+    testImplementation libs.kotlinx.coroutines.test
+    testImplementation libs.mockk
 }
 
 compileKotlin {
@@ -54,9 +50,13 @@ compileTestKotlin {
 
 
 gradlePlugin {
+    website = ext_website
+    vcsUrl = ext_vcs
     plugins {
         simplePlugin {
             id = 'com.tailoredapps.gradle.localize'
+            description = ext_description
+            tags.addAll(ext_labels)
             implementationClass = 'com.tailoredapps.gradle.localize.GradleLocalizePlugin'
         }
     }
@@ -64,17 +64,8 @@ gradlePlugin {
 
 task sourceJar(type: Jar) {
     description = "An archive of the source code for Maven Central"
-    classifier = 'sources'
+    archiveClassifier = 'sources'
     from sourceSets.main.allSource
-}
-
-
-// configuration for publishing to the Gradle plugins portal
-pluginBundle {
-    website = ext_website
-    vcsUrl = ext_vcs
-    description = ext_description
-    tags = ext_labels
 }
 
 
