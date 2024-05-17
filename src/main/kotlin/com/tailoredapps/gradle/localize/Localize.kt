@@ -180,7 +180,7 @@ class Localize {
                 .filter { it.value.size > 1 }
 
             if (duplicates.isNotEmpty()) {
-                throw IllegalStateException("Duplicates found for the following key(s): ${duplicates.keys.joinToString(", ") { "\"$it\"" }}. Localization update aborted!")
+                throw IllegalStateException("Sheet \"${worksheet.title}\" has duplicate key(s): ${duplicates.keys.joinToString(", ") { "\"$it\"" }}. Localization update aborted!")
             }
         }
     }
