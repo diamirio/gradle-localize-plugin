@@ -18,6 +18,7 @@ internal const val DEFAULT_BASE_LANGUAGE = "en"
 internal const val PLUGIN_TASK_GROUP_NAME = "localization"
 
 //created using this tutorial: https://dzone.com/articles/the-complete-custom-gradle-plugin-building-tutoria
+@Suppress("unused")
 class GradleLocalizePlugin : Plugin<Project> {
 
     private val localize: Localize by lazy { Localize() }

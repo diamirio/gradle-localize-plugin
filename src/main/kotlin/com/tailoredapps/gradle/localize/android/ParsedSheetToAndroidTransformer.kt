@@ -1,7 +1,6 @@
 package com.tailoredapps.gradle.localize.android
 
 import com.tailoredapps.gradle.localize.localization.LocalizationSheetParser
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 class ParsedSheetToAndroidTransformer(
@@ -65,7 +64,8 @@ class ParsedSheetToAndroidTransformer(
     }
 
     private fun String.isPluralDefinition(): Boolean {
-        return this.split("\n").any { line -> quantityPrefixes.any { prefix -> line.startsWith(prefix) } }
+        return this.split("\n")
+            .any { line -> quantityPrefixes.any { prefix -> line.startsWith(prefix) } }
     }
 
 
@@ -73,9 +73,10 @@ class ParsedSheetToAndroidTransformer(
         entry: LocalizationSheetParser.ParsedSheet.LocalizationEntry,
         language: String
     ): AndroidValue {
-        val identifier = requireNotNull(entry.identifier[LocalizationSheetParser.Platform.Android]) {
-            "entry.identifier[${LocalizationSheetParser.Platform.Android}]"
-        }
+        val identifier =
+            requireNotNull(entry.identifier[LocalizationSheetParser.Platform.Android]) {
+                "entry.identifier[${LocalizationSheetParser.Platform.Android}]"
+            }
         val value = entry.values[language]
         return if (value != null) {
             when {

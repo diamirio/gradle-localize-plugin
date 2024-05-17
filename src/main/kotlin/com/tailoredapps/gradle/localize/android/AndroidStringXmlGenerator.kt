@@ -29,7 +29,7 @@ class AndroidStringXmlGenerator {
         escapeApostrophes: Boolean = true,
         generateEmptyValues: Boolean = true,
     ): String {
-        return suspendCancellableCoroutine<String> { continuation ->
+        return suspendCancellableCoroutine { continuation ->
             val string = StringBuilder().apply {
                 append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
                 append("<resources>\n")

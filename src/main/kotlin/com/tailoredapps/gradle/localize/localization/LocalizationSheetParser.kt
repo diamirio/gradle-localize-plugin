@@ -69,6 +69,7 @@ class LocalizationSheetParser {
         private const val TITLE_IDENTIFIER_COMMENT_EN = "Comment"
     }
 
+    @Suppress("EnumEntryName")
     enum class Platform {
         iOS,
         Android,
@@ -98,7 +99,7 @@ class LocalizationSheetParser {
      * @param sheet The [DriveManager.Sheet] to parse
      * @param worksheets The list of tabs ("worksheets") to parse / return.
      * If `null`, all tabs will be taken,
-     * Otherwise (non-null): all tabs named as one of the items in [tabs] will be parsed and
+     * Otherwise (non-null): all tabs named as one of the items in [worksheets] will be parsed and
      * returned.
      * @param languageColumnTitles The sheet column titles for the localization to parse
      *
@@ -124,9 +125,9 @@ class LocalizationSheetParser {
                 val firstLine = worksheet.cells.firstOrNull()
                     ?: throw IllegalStateException("Worksheet '${worksheet.title}' does not contain a header line")
 
-                val indexOfPlatforms = Platform.values()
-                    .map { platform -> platform to firstLine.getIndexOfPlatformColumnOrNull(platform) }
-                    .toMap()
+                val indexOfPlatforms = Platform.entries.associateWith { platform ->
+                    firstLine.getIndexOfPlatformColumnOrNull(platform)
+                }
 
                 if (indexOfPlatforms.none { (_, index) -> index != null }) {
                     throw IllegalStateException(
@@ -138,14 +139,12 @@ class LocalizationSheetParser {
                     )
                 }
 
-                val indexOfLanguages = languageColumnTitles
-                    .map { languageIdentifier ->
-                        languageIdentifier to firstLine.indexOfFirstOrThrow(
-                            worksheet.title,
-                            languageIdentifier
-                        )
-                    }
-                    .toMap()
+                val indexOfLanguages = languageColumnTitles.associateWith { languageIdentifier ->
+                    firstLine.indexOfFirstOrThrow(
+                        worksheet.title,
+                        languageIdentifier
+                    )
+                }
 
                 val indexOfComment = firstLine.getIndexOfCommentColumnOrNull()
 
@@ -157,7 +156,7 @@ class LocalizationSheetParser {
                         .filter { it.size > 1 }
                         .map { row ->
                             ParsedSheet.LocalizationEntry(
-                                identifier = Platform.values()
+                                identifier = Platform.entries
                                     .mapNotNull { platform ->
                                         indexOfPlatforms[platform]?.let { index ->
                                             platform to row.getOrNull(index)

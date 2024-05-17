@@ -382,7 +382,7 @@ class LocalizationSheetParserTest {
                     )
                 )
             )
-        );
+        )
         val throwResult = {
             localizationSheetParser.parseSheet(
                 sheet = sheet,
@@ -424,7 +424,7 @@ class LocalizationSheetParserTest {
                     )
                 )
             )
-        );
+        )
         val throwResult = {
             localizationSheetParser.parseSheet(
                 sheet = sheet,
@@ -446,7 +446,7 @@ class LocalizationSheetParserTest {
                     cells = emptyList()
                 )
             )
-        );
+        )
         val throwResult = {
             localizationSheetParser.parseSheet(
                 sheet = sheet,
